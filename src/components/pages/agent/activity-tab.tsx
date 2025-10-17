@@ -72,30 +72,40 @@ export function ActivityTab({ agentId }: ActivityTabProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex h-full w-full flex-col gap-6 text-white">
       <Tabs
         className="flex h-full w-full flex-col"
         onValueChange={setActiveSubTab}
         value={activeSubTab}
       >
-        <TabsList className="mx-4 mt-4 grid w-auto grid-cols-2 self-start">
-          <TabsTrigger value="answers">Answers</TabsTrigger>
-          <TabsTrigger value="review">Review</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 rounded-2xl border border-white/10 bg-white/5 p-1 backdrop-blur">
+          <TabsTrigger
+            className="rounded-xl text-white/60 transition data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            value="answers"
+          >
+            Answers
+          </TabsTrigger>
+          <TabsTrigger
+            className="rounded-xl text-white/60 transition data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            value="review"
+          >
+            Review
+          </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto">
           <TabsContent className="m-0" value="answers">
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <p className="text-muted-foreground">Loading activities...</p>
+                <p className="text-white/60">Loading activities...</p>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {answers.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-                    <p className="text-muted-foreground">No answers yet</p>
-                    <p className="text-muted-foreground text-sm">
-                      Your agent will appear here after responding to mentions
+                  <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-12 text-center backdrop-blur">
+                    <p className="text-white/60">No answers yet</p>
+                    <p className="text-white/40 text-xs">
+                      Your agent will automatically respond to mentions
                     </p>
                   </div>
                 ) : (
@@ -176,7 +186,7 @@ function ActivityCard({
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border bg-card p-4">
+    <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
       {/* Author Info */}
       <div className="flex items-center gap-3">
         <UserAvatar
@@ -185,37 +195,41 @@ function ActivityCard({
           size="sm"
         />
         <div className="flex flex-1 flex-col">
-          <p className="font-medium text-sm">
+          <p className="font-medium text-sm text-white">
             @{activity.originalUser.username}
           </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-white/60 text-xs">
             FID: {activity.originalUser.fid}
           </p>
         </div>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-white/60 text-xs">
           {formatTimestamp(activity.timestamp)}
         </span>
       </div>
 
       {/* Original Message */}
-      <div className="rounded-md bg-muted/50 p-3">
-        <p className="text-sm">{activity.originalMessage}</p>
+      <div className="rounded-xl bg-white/5 p-3">
+        <p className="text-sm text-white/80">{activity.originalMessage}</p>
       </div>
 
       {/* Agent Response */}
-      <div className="rounded-md bg-purple-500/10 p-3">
-        <p className="font-medium text-purple-500 text-xs">Your Agent</p>
-        <p className="mt-1 text-sm">{activity.agentReply}</p>
+      <div className="rounded-xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 p-3">
+        <p className="font-medium text-purple-300 text-xs">Your Agent</p>
+        <p className="mt-1 text-sm text-white">{activity.agentReply}</p>
       </div>
 
       {/* Action Buttons (for Review) */}
       {showActions && (
         <div className="flex gap-2">
-          <Button className="flex-1" onClick={handleApprove} size="sm">
+          <Button
+            className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg transition hover:from-purple-400 hover:to-indigo-400"
+            onClick={handleApprove}
+            size="sm"
+          >
             Approve
           </Button>
           <Button
-            className="flex-1"
+            className="flex-1 border-white/30 bg-white/10 text-white hover:bg-white/20"
             onClick={handleReject}
             size="sm"
             variant="outline"

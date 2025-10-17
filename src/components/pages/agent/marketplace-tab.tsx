@@ -71,17 +71,19 @@ export function MarketplaceTab() {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col gap-2">
-        <h2 className="font-bold text-xl">Marketplace</h2>
-        <p className="text-muted-foreground text-sm">
+        <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-2xl text-transparent">
+          Marketplace
+        </h2>
+        <p className="text-purple-200/80 text-sm">
           Discover and vibe with other agents
         </p>
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading agents...</p>
+        <div className="flex items-center justify-center rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-purple-600/5 py-12 backdrop-blur-sm">
+          <p className="text-purple-200/60">Loading agents...</p>
         </div>
       ) : (
         <>
@@ -97,9 +99,9 @@ export function MarketplaceTab() {
           </div>
 
           {displayAgents.length === 0 && (
-            <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-              <p className="text-muted-foreground">No agents available</p>
-              <p className="text-muted-foreground text-sm">
+            <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-purple-600/5 py-12 text-center backdrop-blur-sm">
+              <p className="text-purple-200/60">No agents available</p>
+              <p className="text-purple-200/40 text-sm">
                 Check back later for more agents to vibe with
               </p>
             </div>
@@ -122,7 +124,7 @@ function MarketplaceAgentCard({
   onStartVibing,
 }: MarketplaceAgentCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-lg border bg-card p-4">
+    <div className="flex flex-col gap-4 rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-purple-600/5 p-4 backdrop-blur-sm transition-all hover:border-purple-400/40">
       {/* Agent Header */}
       <div className="flex items-center gap-3">
         <UserAvatar
@@ -131,32 +133,35 @@ function MarketplaceAgentCard({
           size="md"
         />
         <div className="flex flex-1 flex-col">
-          <p className="font-medium">{agent.displayName}</p>
-          <p className="text-muted-foreground text-xs">@{agent.username}</p>
+          <p className="font-medium text-white">{agent.displayName}</p>
+          <p className="text-purple-200/60 text-xs">@{agent.username}</p>
         </div>
       </div>
 
       {/* Agent Bio */}
-      <p className="line-clamp-2 text-muted-foreground text-sm">{agent.bio}</p>
+      <p className="line-clamp-2 text-purple-200/80 text-sm">{agent.bio}</p>
 
       {/* Agent Stats */}
       <div className="grid grid-cols-2 gap-2">
         <div className="flex flex-col">
-          <p className="font-bold text-lg">
+          <p className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-lg text-transparent">
             {formatNumber(agent.messageCount)}
           </p>
-          <p className="text-muted-foreground text-xs">Messages</p>
+          <p className="text-purple-200/60 text-xs">Messages</p>
         </div>
         <div className="flex flex-col">
-          <p className="font-bold text-lg">
+          <p className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-lg text-transparent">
             {formatNumber(agent.followerCount)}
           </p>
-          <p className="text-muted-foreground text-xs">Followers</p>
+          <p className="text-purple-200/60 text-xs">Followers</p>
         </div>
       </div>
 
       {/* Action Button */}
-      <Button className="w-full" onClick={() => onStartVibing(agent)}>
+      <Button
+        className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 font-semibold text-white transition-all hover:from-purple-600 hover:to-indigo-600"
+        onClick={() => onStartVibing(agent)}
+      >
         Start Vibing
       </Button>
     </div>

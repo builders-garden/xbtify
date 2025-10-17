@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AgentPage } from "@/components/pages/agent";
+import { DemoMode } from "@/components/pages/agent/demo-mode";
 import { env } from "@/lib/env";
 
 const appUrl = env.NEXT_PUBLIC_URL;
@@ -53,5 +53,6 @@ export function generateMetadata(): Metadata {
 }
 
 export default function Home() {
-  return <AgentPage />;
+  // return <AgentPage />;
+  return <DemoMode />;
 }
