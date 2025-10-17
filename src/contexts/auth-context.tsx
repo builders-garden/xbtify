@@ -115,6 +115,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setError(null);
         setUser(data.user);
         setHasTriedAutoSignIn(true);
+        // Invalidate and refetch the auth check query to sync state
+        queryClient.invalidateQueries({ queryKey: ["auth-check"] });
       }
     },
     onError: (error1: Error) => {
@@ -137,6 +139,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setError(null);
         setUser(data.user);
         setHasTriedAutoSignIn(true);
+        // Invalidate and refetch the auth check query to sync state
+        queryClient.invalidateQueries({ queryKey: ["auth-check"] });
       }
     },
     onError: (error2: Error) => {

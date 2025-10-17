@@ -1,0 +1,229 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserAvatar } from "@/components/ui/user-avatar";
+import {
+  useAgentActivities,
+  useApproveActivity,
+  useRejectActivity,
+} from "@/hooks/use-activities";
+import type { Activity } from "@/types/agent.type";
+
+type ActivityTabProps = {
+  agentId: string;
+};
+
+export function ActivityTab({ agentId }: ActivityTabProps) {
+  const [activeSubTab, setActiveSubTab] = useState("answers");
+  const { data: activities = [], isLoading } = useAgentActivities(agentId);
+  const approveActivity = useApproveActivity();
+  const rejectActivity = useRejectActivity();
+
+  // Fallback to mock data if API is not ready
+  const mockActivities: Activity[] = [
+    {
+      id: "1",
+      type: "answer",
+      agentReply: "Just vibing with the new crypto trends! 🚀",
+      originalMessage: "@agent what do you think about the market?",
+      originalUser: {
+        username: "cryptofan",
+        fid: 12345,
+      },
+      timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
+      status: "approved",
+    },
+    {
+      id: "2",
+      type: "review",
+      agentReply: "Hmm, that's a spicy take! Let me think about it... 🤔",
+      originalMessage: "@agent controversial opinion on ETH?",
+      originalUser: {
+        username: "ethmaxi",
+        fid: 67890,
+      },
+      timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+      status: "pending",
+    },
+  ];
+
+  // Use API data if available, otherwise use mock data
+  const displayActivities = activities.length > 0 ? activities : mockActivities;
+  const answers = displayActivities.filter((a) => a.type === "answer");
+  const reviews = displayActivities.filter((a) => a.type === "review");
+
+  const formatTimestamp = (timestamp: Date) => {
+    const date = timestamp;
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 60) {
+      return `${diffMins}m ago`;
+    }
+    if (diffHours < 24) {
+      return `${diffHours}h ago`;
+    }
+    return `${diffDays}d ago`;
+  };
+
+  return (
+    <div className="flex h-full w-full flex-col">
+      <Tabs
+        className="flex h-full w-full flex-col"
+        onValueChange={setActiveSubTab}
+        value={activeSubTab}
+      >
+        <TabsList className="mx-4 mt-4 grid w-auto grid-cols-2 self-start">
+          <TabsTrigger value="answers">Answers</TabsTrigger>
+          <TabsTrigger value="review">Review</TabsTrigger>
+        </TabsList>
+
+        <div className="flex-1 overflow-y-auto p-4">
+          <TabsContent className="m-0" value="answers">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-muted-foreground">Loading activities...</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {answers.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+                    <p className="text-muted-foreground">No answers yet</p>
+                    <p className="text-muted-foreground text-sm">
+                      Your agent will appear here after responding to mentions
+                    </p>
+                  </div>
+                ) : (
+                  answers.map((activity) => (
+                    <ActivityCard
+                      activity={activity}
+                      agentId={agentId}
+                      approveActivity={approveActivity}
+                      formatTimestamp={formatTimestamp}
+                      key={activity.id}
+                      rejectActivity={rejectActivity}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent className="m-0" value="review">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-muted-foreground">Loading activities...</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {reviews.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+                    <p className="text-muted-foreground">No pending reviews</p>
+                    <p className="text-muted-foreground text-sm">
+                      Messages requiring your approval will appear here
+                    </p>
+                  </div>
+                ) : (
+                  reviews.map((activity) => (
+                    <ActivityCard
+                      activity={activity}
+                      agentId={agentId}
+                      approveActivity={approveActivity}
+                      formatTimestamp={formatTimestamp}
+                      key={activity.id}
+                      rejectActivity={rejectActivity}
+                      showActions
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </TabsContent>
+        </div>
+      </Tabs>
+    </div>
+  );
+}
+
+type ActivityCardProps = {
+  activity: Activity;
+  agentId: string;
+  formatTimestamp: (timestamp: Date) => string;
+  showActions?: boolean;
+  approveActivity: ReturnType<typeof useApproveActivity>;
+  rejectActivity: ReturnType<typeof useRejectActivity>;
+};
+
+function ActivityCard({
+  activity,
+  agentId,
+  formatTimestamp,
+  showActions = false,
+  approveActivity,
+  rejectActivity,
+}: ActivityCardProps) {
+  const handleApprove = () => {
+    approveActivity.mutate({ activityId: activity.id, agentId });
+  };
+
+  const handleReject = () => {
+    rejectActivity.mutate({ activityId: activity.id, agentId });
+  };
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border bg-card p-4">
+      {/* Author Info */}
+      <div className="flex items-center gap-3">
+        <UserAvatar
+          alt={activity.originalUser.username}
+          avatarUrl={null}
+          size="sm"
+        />
+        <div className="flex flex-1 flex-col">
+          <p className="font-medium text-sm">
+            @{activity.originalUser.username}
+          </p>
+          <p className="text-muted-foreground text-xs">
+            FID: {activity.originalUser.fid}
+          </p>
+        </div>
+        <span className="text-muted-foreground text-xs">
+          {formatTimestamp(activity.timestamp)}
+        </span>
+      </div>
+
+      {/* Original Message */}
+      <div className="rounded-md bg-muted/50 p-3">
+        <p className="text-sm">{activity.originalMessage}</p>
+      </div>
+
+      {/* Agent Response */}
+      <div className="rounded-md bg-purple-500/10 p-3">
+        <p className="font-medium text-purple-500 text-xs">Your Agent</p>
+        <p className="mt-1 text-sm">{activity.agentReply}</p>
+      </div>
+
+      {/* Action Buttons (for Review) */}
+      {showActions && (
+        <div className="flex gap-2">
+          <Button className="flex-1" onClick={handleApprove} size="sm">
+            Approve
+          </Button>
+          <Button
+            className="flex-1"
+            onClick={handleReject}
+            size="sm"
+            variant="outline"
+          >
+            Reject
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
