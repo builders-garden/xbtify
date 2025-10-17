@@ -5,7 +5,7 @@ import * as dbSchema from "@/lib/database/db.schema";
 import { env } from "@/lib/env";
 
 export const pool = new Pool({
-  connectionString: env.TURSO_DATABASE_URL,
+  connectionString: env.DATABASE_URL,
 });
 
 export const db = drizzle(pool, {

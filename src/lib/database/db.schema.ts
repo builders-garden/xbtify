@@ -8,6 +8,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { ulid } from "ulid";
 import type { Address } from "viem";
@@ -66,18 +67,6 @@ export type Wallet = typeof walletTable.$inferSelect;
 export type CreateWallet = typeof walletTable.$inferInsert;
 export type UpdateWallet = Partial<CreateWallet>;
 
-// Relations
-export const userRelations = relations(userTable, ({ many }) => ({
-  wallets: many(walletTable),
-}));
-
-export const walletRelations = relations(walletTable, ({ one }) => ({
-  user: one(userTable, {
-    fields: [walletTable.userId],
-    references: [userTable.id],
-  }),
-}));
-
 /**
  * Cast table
  */
@@ -124,7 +113,62 @@ export type Agent = typeof agentTable.$inferSelect;
 export type CreateAgent = typeof agentTable.$inferInsert;
 export type UpdateAgent = Partial<CreateAgent>;
 
-// Relations for Cast
+export const groupTable = pgTable(
+  "group",
+  {
+    id: text("id").primaryKey(),
+    conversationId: text("conversation_id").notNull(),
+    name: text("name"),
+    description: text("description"),
+    imageUrl: text("image_url"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [uniqueIndex("group_conversation_id_unique_idx").on(t.conversationId)]
+);
+
+export type Group = typeof groupTable.$inferSelect;
+export type CreateGroup = typeof groupTable.$inferInsert;
+export type UpdateGroup = Partial<CreateGroup>;
+
+// Group members
+export const groupMemberTable = pgTable(
+  "group_member",
+  {
+    id: text("id").primaryKey().notNull(),
+    groupId: text("group_id")
+      .notNull()
+      .references(() => groupTable.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => userTable.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("group_member_group_user_unique_idx").on(t.groupId, t.userId),
+  ]
+);
+
+export type GroupMember = typeof groupMemberTable.$inferSelect;
+export type CreateGroupMember = typeof groupMemberTable.$inferInsert;
+
+/**
+ * Drizzle Relations
+ */
+export const userRelations = relations(userTable, ({ many }) => ({
+  wallets: many(walletTable),
+  groupMembers: many(groupMemberTable),
+}));
+
+export const walletRelations = relations(walletTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [walletTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
 export const castRelations = relations(castTable, ({ one }) => ({
   user: one(userTable, {
     fields: [castTable.fid],
@@ -132,10 +176,24 @@ export const castRelations = relations(castTable, ({ one }) => ({
   }),
 }));
 
-// Relations for Agent
 export const agentRelations = relations(agentTable, ({ one }) => ({
   creator: one(userTable, {
     fields: [agentTable.creatorFid],
     references: [userTable.farcasterFid],
+  }),
+}));
+
+export const groupRelations = relations(groupTable, ({ many }) => ({
+  members: many(groupMemberTable),
+}));
+
+export const groupMemberRelations = relations(groupMemberTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [groupMemberTable.userId],
+    references: [userTable.id],
+  }),
+  group: one(groupTable, {
+    fields: [groupMemberTable.groupId],
+    references: [groupTable.id],
   }),
 }));

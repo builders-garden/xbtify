@@ -11,6 +11,6 @@ export default {
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: env.TURSO_DATABASE_URL,
+    url: env.DATABASE_URL,
   },
 } satisfies Config;
