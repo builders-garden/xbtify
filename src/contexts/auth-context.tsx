@@ -89,6 +89,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authMethod, setAuthMethod] = useState<AuthMethod>(null);
   const [hasTriedInitialAuth, setHasTriedInitialAuth] = useState(false);
   const [environmentTimeout, setEnvironmentTimeout] = useState(false);
+  const [hasTriedAutoSignIn, setHasTriedAutoSignIn] = useState(false);
 
   // Ref to track logout state and prevent multiple logout calls
   const isLoggingOutRef = useRef(false);
@@ -113,6 +114,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsSignedIn(true);
         setError(null);
         setUser(data.user);
+        setHasTriedAutoSignIn(true);
       }
     },
     onError: (error1: Error) => {
@@ -120,6 +122,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(error1);
       setIsSigningIn(false);
       setIsSignedIn(false);
+      setHasTriedAutoSignIn(true); // Mark as tried even on failure
     },
   });
 
@@ -133,6 +136,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsSignedIn(true);
         setError(null);
         setUser(data.user);
+        setHasTriedAutoSignIn(true);
       }
     },
     onError: (error2: Error) => {
@@ -140,6 +144,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(error2);
       setIsSigningIn(false);
       setIsSignedIn(false);
+      setHasTriedAutoSignIn(true); // Mark as tried even on failure
     },
   });
 
@@ -152,6 +157,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setIsSignedIn(false);
       setError(null);
       setHasTriedInitialAuth(false);
+      setHasTriedAutoSignIn(false); // Reset auto sign-in flag on logout
       setUser(null);
       // Invalidate user query after logout to clear cache
       queryClient.invalidateQueries({ queryKey: ["auth-check"] });
@@ -294,6 +300,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (authUser.farcasterFid) {
         setAuthMethod("farcaster");
         setHasTriedInitialAuth(true);
+        setHasTriedAutoSignIn(true); // User already authenticated
         return;
       }
     }
@@ -304,12 +311,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
 
     // Only proceed with sign-in flows after we've tried the initial auth check
-    if (!hasTriedInitialAuth || isSigningIn) {
+    if (!hasTriedInitialAuth || isSigningIn || hasTriedAutoSignIn) {
       return;
     }
 
     // Auto sign-in with Farcaster if in miniapp and not authenticated
     if (isInMiniApp && miniAppContext && !authMethod && !authUser) {
+      console.log("Attempting auto sign-in with Farcaster...");
       signInWithFarcaster();
     }
   }, [
@@ -317,6 +325,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     userError,
     authMethod,
     hasTriedInitialAuth,
+    hasTriedAutoSignIn,
     isInMiniApp,
     isMiniAppReady,
     isFetchedAuthUser,

@@ -22,6 +22,7 @@ export const userTable = pgTable("user", {
     .$defaultFn(() => ulid()),
   avatarUrl: text("avatar_url"),
   username: text("username"),
+  inboxId: text("inbox_id").unique(),
   // Farcaster
   farcasterFid: integer("farcaster_fid").unique(),
   farcasterUsername: text("farcaster_username"),
