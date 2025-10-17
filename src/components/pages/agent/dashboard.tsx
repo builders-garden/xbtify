@@ -1,5 +1,6 @@
 "use client";
 
+import { Bell, ShoppingCart, User } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Agent } from "@/types/agent.type";
@@ -16,53 +17,60 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
   const [activeTab, setActiveTab] = useState("my-agent");
 
   return (
-    <div className="relative flex min-h-screen w-full justify-center overflow-hidden bg-gradient-to-b from-[#1a0b2e] via-[#2d1b4e] to-[#1e1b4b] p-3">
+    <div className="relative flex min-h-screen w-full justify-center overflow-hidden bg-gradient-to-b from-[#1a0b2e] via-[#2d1b4e] to-[#1e1b4b]">
       <div className="absolute top-12 left-12 h-80 w-80 rounded-full bg-purple-500/20 blur-3xl" />
       <div className="absolute right-16 bottom-16 h-96 w-96 rounded-full bg-indigo-600/30 blur-3xl" />
 
-      <div className="relative z-10 w-full max-w-3xl text-white">
-        <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl">
-          <Tabs
-            className="flex h-full w-full flex-col"
-            onValueChange={setActiveTab}
-            value={activeTab}
-          >
-            <TabsList className="grid w-full grid-cols-3 rounded-none border-white/10 border-b bg-white/10 p-0 backdrop-blur">
+      <div className="relative z-10 flex w-full max-w-3xl flex-col text-white">
+        <Tabs
+          className="flex h-screen w-full flex-col"
+          onValueChange={setActiveTab}
+          value={activeTab}
+        >
+          {/* Content Area */}
+          <div className="flex-1 overflow-y-auto p-3 pb-24">
+            <TabsContent className="m-0 h-full" value="my-agent">
+              <MyAgentTab agent={agent} onUpdateAgent={onUpdateAgent} />
+            </TabsContent>
+
+            <TabsContent className="m-0 h-full" value="activity">
+              <ActivityTab agentId={agent.id} />
+            </TabsContent>
+
+            <TabsContent className="m-0 h-full" value="marketplace">
+              <MarketplaceTab />
+            </TabsContent>
+          </div>
+
+          {/* Bottom Navigation */}
+          <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-3xl">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-0 rounded-none border-white/10 border-t bg-black/40 p-0 backdrop-blur-xl">
               <TabsTrigger
-                className="rounded-none border-transparent border-b-2 px-4 py-4 font-semibold text-white/60 transition data-[state=active]:border-white data-[state=active]:bg-white/5 data-[state=active]:text-white"
+                className="flex flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="my-agent"
               >
-                My Agent
+                <User className="h-6 w-6" />
+                <span className="text-xs">My Agent</span>
               </TabsTrigger>
+
               <TabsTrigger
-                className="rounded-none border-transparent border-b-2 px-4 py-4 font-semibold text-white/60 transition data-[state=active]:border-white data-[state=active]:bg-white/5 data-[state=active]:text-white"
+                className="flex flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="activity"
               >
-                Activity
+                <Bell className="h-6 w-6" />
+                <span className="text-xs">Activity</span>
               </TabsTrigger>
+
               <TabsTrigger
-                className="rounded-none border-transparent border-b-2 px-4 py-4 font-semibold text-white/60 transition data-[state=active]:border-white data-[state=active]:bg-white/5 data-[state=active]:text-white"
+                className="flex flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="marketplace"
               >
-                Marketplace
+                <ShoppingCart className="h-6 w-6" />
+                <span className="text-xs">Marketplace</span>
               </TabsTrigger>
             </TabsList>
-
-            <div className="flex-1 overflow-y-auto p-6">
-              <TabsContent className="m-0 h-full" value="my-agent">
-                <MyAgentTab agent={agent} onUpdateAgent={onUpdateAgent} />
-              </TabsContent>
-
-              <TabsContent className="m-0 h-full" value="activity">
-                <ActivityTab agentId={agent.id} />
-              </TabsContent>
-
-              <TabsContent className="m-0 h-full" value="marketplace">
-                <MarketplaceTab />
-              </TabsContent>
-            </div>
-          </Tabs>
-        </div>
+          </div>
+        </Tabs>
       </div>
     </div>
   );

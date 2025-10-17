@@ -44,7 +44,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6 text-white">
+    <div className="flex flex-col gap-4 pb-20 text-white">
       {/* Agent Header */}
       <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
         <UserAvatar
@@ -59,7 +59,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
       </div>
 
       {/* Agent Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-4">
         <div className="flex flex-col items-center rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
           <p className="font-semibold text-2xl text-white">
             {agent.stats?.totalReplies ?? 0}

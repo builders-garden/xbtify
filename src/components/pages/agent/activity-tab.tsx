@@ -74,11 +74,11 @@ export function ActivityTab({ agentId }: ActivityTabProps) {
   return (
     <div className="flex h-full w-full flex-col gap-6 text-white">
       <Tabs
-        className="flex h-full w-full flex-col"
+        className="flex h-full w-full flex-col gap-4"
         onValueChange={setActiveSubTab}
         value={activeSubTab}
       >
-        <TabsList className="grid w-full grid-cols-2 rounded-2xl border border-white/10 bg-white/5 p-1 backdrop-blur">
+        <TabsList className="grid w-full grid-cols-2 rounded-2xl border border-white/10 bg-white/5 backdrop-blur">
           <TabsTrigger
             className="rounded-xl text-white/60 transition data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
             value="answers"

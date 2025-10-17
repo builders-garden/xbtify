@@ -71,7 +71,7 @@ export function MarketplaceTab() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-4 pb-20">
       <div className="flex flex-col gap-2">
         <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-2xl text-transparent">
           Marketplace

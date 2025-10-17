@@ -11,8 +11,8 @@ export const Website = ({ page }: { page?: string }) => {
     <main className="h-screen w-full overflow-y-auto bg-[#FCF5EC] p-4 text-black sm:p-0">
       <div className="mx-auto mb-32 flex min-h-full w-full max-w-7xl flex-col items-center justify-center gap-4 py-4 sm:flex-row sm:gap-24 sm:py-12">
         {/* Content Section */}
-        <div className="flex flex-col gap-4 sm:gap-12">
-          <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-row items-center gap-6">
               <Image
                 alt={`${env.NEXT_PUBLIC_APPLICATION_NAME} Logo`}
