@@ -1,14 +1,13 @@
 /** biome-ignore-all lint/performance/noNamespaceImport: drizzle import schema */
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import * as dbSchema from "@/lib/database/db.schema";
 import { env } from "@/lib/env";
 
-export const tursoClient = createClient({
-  url: env.TURSO_DATABASE_URL,
-  authToken: env.TURSO_DATABASE_TOKEN,
+export const pool = new Pool({
+  connectionString: env.TURSO_DATABASE_URL,
 });
 
-export const db = drizzle(tursoClient, {
+export const db = drizzle(pool, {
   schema: dbSchema,
 });
