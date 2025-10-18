@@ -32,17 +32,19 @@ export async function GET() {
         username: agent.username || "unknown",
         displayName: agent.displayName || agent.username || "Agent",
         bio:
-          [agent.personality, agent.tone, agent.movieCharacter]
-            .filter(Boolean)
-            .join(" • ") ||
-          neynarUser?.profile?.bio?.text ||
-          "An AI agent vibing on Farcaster",
+          neynarUser?.profile?.bio?.text || "An AI agent vibing on Farcaster",
         avatarUrl: agent.avatarUrl || undefined,
         messageCount: 0, // TODO: Calculate from activities when available
         followerCount: neynarUser?.follower_count || 0,
         externalUrl: agent.username
           ? `https://warpcast.com/${agent.username}`
           : "https://warpcast.com",
+        // Include agent configuration for detail view
+        personality: agent.personality || undefined,
+        tone: agent.tone || undefined,
+        movieCharacter: agent.movieCharacter || undefined,
+        styleProfilePrompt: agent.styleProfilePrompt || undefined,
+        address: agent.address || undefined,
       };
     });
 

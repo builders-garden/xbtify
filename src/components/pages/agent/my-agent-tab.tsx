@@ -1,5 +1,6 @@
 "use client";
 
+import { Share2 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import type { Address } from "viem";
@@ -14,6 +15,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { useUsdcBalance } from "@/hooks/use-usdc-balance";
 import type { Agent } from "@/lib/database/db.schema";
+import {
+  CHARACTER_OPTIONS,
+  CommonPhrases,
+  CommunicationStyle,
+  Jargon,
+  PERSONALITY_OPTIONS,
+  parseStyleProfile,
+  TONE_OPTIONS,
+  Topics,
+} from "./shared-agent-components";
 
 type MyAgentTabProps = {
   agent: Agent;
@@ -27,23 +38,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
     enabled: !!agent.address,
   });
 
-  // Parse the styleProfilePrompt JSON if it exists
-  let styleProfile: {
-    vocabulary?: {
-      common_phrases?: string[];
-      jargon?: string[];
-    };
-    keywords?: Record<string, string>;
-    tone?: string;
-  } | null = null;
-
-  try {
-    if (agent.styleProfilePrompt) {
-      styleProfile = JSON.parse(agent.styleProfilePrompt);
-    }
-  } catch {
-    // Invalid JSON, ignore
-  }
+  const styleProfile = parseStyleProfile(agent.styleProfilePrompt);
 
   const handlePersonalityChange = (value: string) => {
     onUpdateAgent({ personality: value || undefined });
@@ -90,9 +85,22 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
           size="xl"
         />
         <div className="flex flex-1 flex-col">
-          <h2 className="font-bold text-2xl text-white">
-            {agent.displayName || agent.username}
-          </h2>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-bold text-white text-xl">
+              {agent.displayName || agent.username}
+            </h2>
+            <motion.button
+              className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
+              onClick={() => {
+                // TODO: Implement share functionality
+              }}
+              type="button"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Share2 className="h-5 w-5" />
+            </motion.button>
+          </div>
           <p className="text-purple-200/60 text-sm">@{agent.username}</p>
           {agent.address && (
             <p className="mt-1 font-mono text-purple-200/40 text-xs">
@@ -158,10 +166,13 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
                 <SelectValue placeholder="Select personality..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="builder">👷 Builder</SelectItem>
-                <SelectItem value="artist">🎨 Artist</SelectItem>
-                <SelectItem value="business">💼 Business</SelectItem>
-                <SelectItem value="degen">🎲 Degen</SelectItem>
+                {Object.entries(PERSONALITY_OPTIONS).map(
+                  ([value, { label, emoji }]) => (
+                    <SelectItem key={value} value={value}>
+                      {emoji} {label}
+                    </SelectItem>
+                  )
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -174,10 +185,13 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
                 <SelectValue placeholder="Select tone..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="formal">🎩 Formal</SelectItem>
-                <SelectItem value="enthusiastic">🔥 Enthusiastic</SelectItem>
-                <SelectItem value="irreverent">😎 Irreverent</SelectItem>
-                <SelectItem value="humorous">😂 Humorous</SelectItem>
+                {Object.entries(TONE_OPTIONS).map(
+                  ([value, { label, emoji }]) => (
+                    <SelectItem key={value} value={value}>
+                      {emoji} {label}
+                    </SelectItem>
+                  )
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -195,10 +209,13 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
                 <SelectValue placeholder="Select character..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="mastermind">🧠 Mastermind</SelectItem>
-                <SelectItem value="buddy">🤝 Buddy</SelectItem>
-                <SelectItem value="comic relief">🤡 Comic Relief</SelectItem>
-                <SelectItem value="villain">😈 Villain</SelectItem>
+                {Object.entries(CHARACTER_OPTIONS).map(
+                  ([value, { label, emoji }]) => (
+                    <SelectItem key={value} value={value}>
+                      {emoji} {label}
+                    </SelectItem>
+                  )
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -206,102 +223,26 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
       </motion.div>
 
       {/* Style Profile - Common Phrases */}
-      {styleProfile?.vocabulary?.common_phrases &&
-        styleProfile.vocabulary.common_phrases.length > 0 && (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-          >
-            <h3 className="mb-3 font-bold text-lg text-white">
-              Common Phrases 💬
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {styleProfile.vocabulary.common_phrases
-                .slice(0, 8)
-                .map((phrase) => (
-                  <span
-                    className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-sm"
-                    key={phrase}
-                  >
-                    "{phrase}"
-                  </span>
-                ))}
-            </div>
-          </motion.div>
-        )}
+      {styleProfile?.vocabulary?.common_phrases && (
+        <CommonPhrases
+          delay={0.3}
+          phrases={styleProfile.vocabulary.common_phrases}
+        />
+      )}
 
       {/* Style Profile - Jargon */}
-      {styleProfile?.vocabulary?.jargon &&
-        styleProfile.vocabulary.jargon.length > 0 && (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
-          >
-            <h3 className="mb-3 font-bold text-lg text-white">
-              Vocabulary & Jargon 🗣️
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {styleProfile.vocabulary.jargon.slice(0, 15).map((word) => (
-                <span
-                  className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-sm"
-                  key={word}
-                >
-                  {word}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-        )}
+      {styleProfile?.vocabulary?.jargon && (
+        <Jargon delay={0.4} jargon={styleProfile.vocabulary.jargon} />
+      )}
 
       {/* Style Profile - Keywords/Topics */}
-      {styleProfile?.keywords &&
-        Object.keys(styleProfile.keywords).length > 0 && (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
-          >
-            <h3 className="mb-3 font-bold text-lg text-white">
-              Topics & Expertise 🎯
-            </h3>
-            <div className="space-y-2">
-              {Object.entries(styleProfile.keywords)
-                .slice(0, 5)
-                .map(([key, description]) => (
-                  <div
-                    className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
-                    key={key}
-                  >
-                    <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
-                      {key.replace(/_/g, " ")}
-                    </h4>
-                    <p className="text-purple-200/70 text-xs">{description}</p>
-                  </div>
-                ))}
-            </div>
-          </motion.div>
-        )}
+      {styleProfile?.keywords && (
+        <Topics delay={0.5} keywords={styleProfile.keywords} />
+      )}
 
       {/* Style Profile - Tone Description */}
       {styleProfile?.tone && (
-        <motion.div
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
-          initial={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.3, delay: 0.6 }}
-        >
-          <h3 className="mb-2 font-bold text-lg text-white">
-            Communication Style ✨
-          </h3>
-          <p className="text-purple-200/80 text-sm leading-relaxed">
-            {styleProfile.tone}
-          </p>
-        </motion.div>
+        <CommunicationStyle delay={0.6} style={styleProfile.tone} />
       )}
     </div>
   );

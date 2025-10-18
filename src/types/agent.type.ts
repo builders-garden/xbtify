@@ -42,6 +42,12 @@ export type MarketplaceAgent = {
   messageCount: number;
   followerCount: number;
   externalUrl: string; // Warpcast or external link
+  // Agent personality
+  personality?: string;
+  tone?: string;
+  movieCharacter?: string;
+  styleProfilePrompt?: string;
+  address?: string;
 };
 
 export type AgentCreationProgress = {

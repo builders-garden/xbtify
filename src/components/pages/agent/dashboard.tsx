@@ -15,7 +15,7 @@ type DashboardProps = {
 };
 
 export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState("my-agent");
+  const [activeTab, setActiveTab] = useState("feed");
 
   return (
     <div className="relative flex min-h-screen w-full justify-center overflow-hidden">
