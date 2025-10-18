@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Agent } from "@/lib/database/db.schema";
-import { ActivityTab } from "./activity-tab";
 import { ExploreTab } from "./explore-tab";
+import { FeedTab } from "./feed-tab";
 import { MyAgentTab } from "./my-agent-tab";
 
 type DashboardProps = {
@@ -28,32 +28,17 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
           {/* Content Area */}
           <div className="relative flex-1 overflow-y-auto overflow-x-hidden p-4 pb-24">
             <AnimatePresence mode="wait">
-              {activeTab === "my-agent" && (
+              {activeTab === "feed" && (
                 <motion.div
                   animate={{ opacity: 1, x: 0 }}
                   className="h-full"
                   exit={{ opacity: 0, x: -20 }}
                   initial={{ opacity: 0, x: 20 }}
-                  key="my-agent"
+                  key="feed"
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                  <TabsContent className="m-0 h-full" value="my-agent">
-                    <MyAgentTab agent={agent} onUpdateAgent={onUpdateAgent} />
-                  </TabsContent>
-                </motion.div>
-              )}
-
-              {activeTab === "activity" && (
-                <motion.div
-                  animate={{ opacity: 1, x: 0 }}
-                  className="h-full"
-                  exit={{ opacity: 0, x: -20 }}
-                  initial={{ opacity: 0, x: 20 }}
-                  key="activity"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <TabsContent className="m-0 h-full" value="activity">
-                    <ActivityTab agentId={agent.id} />
+                  <TabsContent className="m-0 h-full" value="feed">
+                    <FeedTab agentId={agent.id} />
                   </TabsContent>
                 </motion.div>
               )}
@@ -72,6 +57,21 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
                   </TabsContent>
                 </motion.div>
               )}
+
+              {activeTab === "my-agent" && (
+                <motion.div
+                  animate={{ opacity: 1, x: 0 }}
+                  className="h-full"
+                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  key="my-agent"
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <TabsContent className="m-0 h-full" value="my-agent">
+                    <MyAgentTab agent={agent} onUpdateAgent={onUpdateAgent} />
+                  </TabsContent>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 
@@ -82,9 +82,9 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
               <motion.div
                 animate={{
                   x:
-                    activeTab === "my-agent"
+                    activeTab === "feed"
                       ? "0%"
-                      : activeTab === "activity"
+                      : activeTab === "explore"
                         ? "100%"
                         : "200%",
                 }}
@@ -94,46 +94,24 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
 
               <TabsTrigger
                 className="relative flex cursor-pointer flex-col items-center gap-0 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
-                value="my-agent"
+                value="feed"
               >
                 <motion.div
                   animate={{
-                    scale: activeTab === "my-agent" ? 1.1 : 1,
-                    rotate: activeTab === "my-agent" ? [0, -10, 10, 0] : 0,
+                    scale: activeTab === "feed" ? 1.1 : 1,
+                    rotate: activeTab === "feed" ? [0, -10, 10, 0] : 0,
                   }}
                   transition={{ duration: 0.3 }}
                 >
                   <Image
-                    alt="My Agent"
-                    className="h-9 w-9"
-                    height={28}
-                    src="/images/my_agent.png"
-                    width={28}
-                  />
-                </motion.div>
-                <span className="text-sm">My Agent</span>
-              </TabsTrigger>
-
-              <TabsTrigger
-                className="relative flex cursor-pointer flex-col items-center gap-0 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
-                value="activity"
-              >
-                <motion.div
-                  animate={{
-                    scale: activeTab === "activity" ? 1.1 : 1,
-                    rotate: activeTab === "activity" ? [0, -10, 10, 0] : 0,
-                  }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Image
-                    alt="Activity"
+                    alt="Feed"
                     className="h-9 w-9"
                     height={28}
                     src="/images/activity.png"
                     width={28}
                   />
                 </motion.div>
-                <span className="text-sm">Activity</span>
+                <span className="text-sm">Feed</span>
               </TabsTrigger>
 
               <TabsTrigger
@@ -156,6 +134,28 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
                   />
                 </motion.div>
                 <span className="text-sm">Explore</span>
+              </TabsTrigger>
+
+              <TabsTrigger
+                className="relative flex cursor-pointer flex-col items-center gap-0 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
+                value="my-agent"
+              >
+                <motion.div
+                  animate={{
+                    scale: activeTab === "my-agent" ? 1.1 : 1,
+                    rotate: activeTab === "my-agent" ? [0, -10, 10, 0] : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Image
+                    alt="Agent"
+                    className="h-9 w-9"
+                    height={28}
+                    src="/images/my_agent.png"
+                    width={28}
+                  />
+                </motion.div>
+                <span className="text-sm">My Agent</span>
               </TabsTrigger>
             </TabsList>
           </div>

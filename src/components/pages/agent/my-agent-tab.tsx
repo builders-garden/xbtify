@@ -67,6 +67,16 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
 
   return (
     <div className="flex flex-col gap-4 pb-28 text-white">
+      {/* Tab Header */}
+      <div className="flex flex-col gap-2">
+        <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-4xl text-transparent">
+          My Agent
+        </h2>
+        <p className="text-purple-200/80 text-sm">
+          Manage your AI agent's personality and settings
+        </p>
+      </div>
+
       {/* Agent Header */}
       <motion.div
         animate={{ opacity: 1, y: 0 }}

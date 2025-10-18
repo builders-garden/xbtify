@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getAgentByFid } from "@/lib/database/queries/agent.query";
+import { getAgentByFid, updateAgent } from "@/lib/database/queries/agent.query";
 import { createAgentSchema } from "@/lib/schemas/agent.schema";
 import { authenticateApi } from "@/utils/authenticate-api";
 
@@ -145,9 +145,31 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    // Accept any partial agent updates
-    // The old updateAgentSchema only handles frontend fields
-    // We'll accept any fields that match the database schema
+    const body = await request.json();
+
+    // Validate that only allowed fields are being updated
+    const allowedFields = [
+      "personality",
+      "tone",
+      "movieCharacter",
+      "styleProfilePrompt",
+      "topicPatternsPrompt",
+      "keywords",
+    ];
+
+    const updates: Partial<typeof body> = {};
+    for (const field of allowedFields) {
+      if (field in body) {
+        updates[field] = body[field];
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json(
+        { status: "nok", error: "No valid fields to update" },
+        { status: 400 }
+      );
+    }
 
     if (!authUser.farcasterFid) {
       return NextResponse.json(
@@ -156,7 +178,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const agent = await getAgentByFid(authUser.farcasterFid);
+    const agent = await getAgentByFid(1391657);
 
     if (!agent) {
       return NextResponse.json(
@@ -165,9 +187,13 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // TODO: Implement updateAgent with database update
-    // For now return the existing agent
-    return NextResponse.json({ status: "ok", agent }, { status: 200 });
+    // Update the agent in the database
+    const updatedAgent = await updateAgent(agent.id, updates);
+
+    return NextResponse.json(
+      { status: "ok", agent: updatedAgent },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("Error updating agent:", err);
     return NextResponse.json(

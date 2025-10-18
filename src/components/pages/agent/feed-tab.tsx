@@ -12,11 +12,11 @@ import {
 } from "@/hooks/use-activities";
 import type { Activity } from "@/types/agent.type";
 
-type ActivityTabProps = {
+type FeedTabProps = {
   agentId: string;
 };
 
-export function ActivityTab({ agentId }: ActivityTabProps) {
+export function FeedTab({ agentId }: FeedTabProps) {
   const [activeSubTab, setActiveSubTab] = useState("answers");
   const { data: activities = [], isLoading } = useAgentActivities(agentId);
   const approveActivity = useApproveActivity();
@@ -73,7 +73,17 @@ export function ActivityTab({ agentId }: ActivityTabProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col gap-6 text-white">
+    <div className="flex h-full w-full flex-col gap-4 text-white">
+      {/* Tab Header */}
+      <div className="flex flex-col gap-2">
+        <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-4xl text-transparent">
+          Feed
+        </h2>
+        <p className="text-purple-200/80 text-sm">
+          Your agent's conversations and interactions
+        </p>
+      </div>
+
       <Tabs
         className="flex h-full w-full flex-col gap-4"
         onValueChange={setActiveSubTab}
