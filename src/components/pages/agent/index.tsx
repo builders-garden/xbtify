@@ -48,9 +48,9 @@ export function AgentPage() {
     }
   };
 
-  const handleViewMarketplace = () => {
-    // TODO: Navigate to marketplace or trigger marketplace view
-    console.log("View marketplace");
+  const handleViewExplore = () => {
+    // TODO: Navigate to explore or trigger explore view
+    console.log("View explore");
   };
 
   // Show loading state while fetching agent data
@@ -83,7 +83,7 @@ export function AgentPage() {
   return (
     <MainFlow
       onCreateAgent={handleStartOnboarding}
-      onViewMarketplace={handleViewMarketplace}
+      onViewExplore={handleViewExplore}
     />
   );
 }

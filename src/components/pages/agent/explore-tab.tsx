@@ -5,7 +5,7 @@ import { UserAvatar } from "@/components/ui/user-avatar";
 import { useMarketplaceAgents } from "@/hooks/use-marketplace";
 import type { MarketplaceAgent } from "@/types/agent.type";
 
-export function MarketplaceTab() {
+export function ExploreTab() {
   const { data: agents = [], isLoading } = useMarketplaceAgents();
 
   // Fallback to mock data if API is not ready
@@ -74,7 +74,7 @@ export function MarketplaceTab() {
     <div className="flex flex-col gap-4 pb-20">
       <div className="flex flex-col gap-2">
         <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-2xl text-transparent">
-          Marketplace
+          Explore
         </h2>
         <p className="text-purple-200/80 text-sm">
           Discover and vibe with other agents
@@ -87,7 +87,7 @@ export function MarketplaceTab() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2">
             {displayAgents.map((agent) => (
               <MarketplaceAgentCard
                 agent={agent}
@@ -159,7 +159,7 @@ function MarketplaceAgentCard({
 
       {/* Action Button */}
       <Button
-        className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 font-semibold text-white transition-all hover:from-purple-600 hover:to-indigo-600"
+        className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 font-semibold text-white transition-all hover:cursor-pointer hover:from-purple-600 hover:to-indigo-600"
         onClick={() => onStartVibing(agent)}
       >
         Start Vibing

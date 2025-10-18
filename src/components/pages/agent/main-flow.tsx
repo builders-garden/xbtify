@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/auth-context";
 
 type MainFlowProps = {
   onCreateAgent: () => void;
-  onViewMarketplace: () => void;
+  onViewExplore: () => void;
 };
 
 type Message = {
@@ -68,7 +68,7 @@ function TypingText({
   return <span>{displayedText}</span>;
 }
 
-export function MainFlow({ onCreateAgent, onViewMarketplace }: MainFlowProps) {
+export function MainFlow({ onCreateAgent, onViewExplore }: MainFlowProps) {
   const { user } = useAuth();
   const [visibleMessages, setVisibleMessages] = useState<Message[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
@@ -241,10 +241,10 @@ export function MainFlow({ onCreateAgent, onViewMarketplace }: MainFlowProps) {
 
             <Button
               className="h-11 w-full rounded-2xl border-2 border-white/20 bg-white/5 font-medium text-sm text-white backdrop-blur-sm transition-all hover:cursor-pointer hover:border-white/40 hover:bg-white/10 hover:text-white"
-              onClick={onViewMarketplace}
+              onClick={onViewExplore}
               variant="outline"
             >
-              View Other Agents 👀
+              Explore Other Agents 👀
             </Button>
           </motion.div>
         </div>

@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, ShoppingCart, User } from "lucide-react";
+import { Bell, Compass, User } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Agent } from "@/types/agent.type";
 import { ActivityTab } from "./activity-tab";
-import { MarketplaceTab } from "./marketplace-tab";
+import { ExploreTab } from "./explore-tab";
 import { MyAgentTab } from "./my-agent-tab";
 
 type DashboardProps = {
@@ -25,45 +26,118 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
           value={activeTab}
         >
           {/* Content Area */}
-          <div className="flex-1 overflow-y-auto p-3 pb-24">
-            <TabsContent className="m-0 h-full" value="my-agent">
-              <MyAgentTab agent={agent} onUpdateAgent={onUpdateAgent} />
-            </TabsContent>
+          <div className="relative flex-1 overflow-y-auto overflow-x-hidden p-4 pb-24">
+            <AnimatePresence mode="wait">
+              {activeTab === "my-agent" && (
+                <motion.div
+                  animate={{ opacity: 1, x: 0 }}
+                  className="h-full"
+                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  key="my-agent"
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <TabsContent className="m-0 h-full" value="my-agent">
+                    <MyAgentTab agent={agent} onUpdateAgent={onUpdateAgent} />
+                  </TabsContent>
+                </motion.div>
+              )}
 
-            <TabsContent className="m-0 h-full" value="activity">
-              <ActivityTab agentId={agent.id} />
-            </TabsContent>
+              {activeTab === "activity" && (
+                <motion.div
+                  animate={{ opacity: 1, x: 0 }}
+                  className="h-full"
+                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  key="activity"
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <TabsContent className="m-0 h-full" value="activity">
+                    <ActivityTab agentId={agent.id} />
+                  </TabsContent>
+                </motion.div>
+              )}
 
-            <TabsContent className="m-0 h-full" value="marketplace">
-              <MarketplaceTab />
-            </TabsContent>
+              {activeTab === "explore" && (
+                <motion.div
+                  animate={{ opacity: 1, x: 0 }}
+                  className="h-full"
+                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  key="explore"
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <TabsContent className="m-0 h-full" value="explore">
+                    <ExploreTab />
+                  </TabsContent>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Bottom Navigation */}
           <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-3xl">
-            <TabsList className="grid h-auto w-full grid-cols-3 gap-0 rounded-none border-white/10 border-t bg-black/40 p-0 backdrop-blur-xl">
+            <TabsList className="relative grid h-auto w-full grid-cols-3 gap-0 rounded-none border-white/10 border-t bg-black/40 p-0 backdrop-blur-xl">
+              {/* Active indicator */}
+              <motion.div
+                animate={{
+                  x:
+                    activeTab === "my-agent"
+                      ? "0%"
+                      : activeTab === "activity"
+                        ? "100%"
+                        : "200%",
+                }}
+                className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-purple-500/20 to-indigo-600/20"
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              />
+
               <TabsTrigger
-                className="flex flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
+                className="relative flex cursor-pointer flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-4 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="my-agent"
               >
-                <User className="h-6 w-6" />
-                <span className="text-xs">My Agent</span>
+                <motion.div
+                  animate={{
+                    scale: activeTab === "my-agent" ? 1.1 : 1,
+                    rotate: activeTab === "my-agent" ? [0, -10, 10, 0] : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <User className="h-7 w-7" />
+                </motion.div>
+                <span className="text-sm">My Agent</span>
               </TabsTrigger>
 
               <TabsTrigger
-                className="flex flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
+                className="relative flex cursor-pointer flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-4 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="activity"
               >
-                <Bell className="h-6 w-6" />
-                <span className="text-xs">Activity</span>
+                <motion.div
+                  animate={{
+                    scale: activeTab === "activity" ? 1.1 : 1,
+                    rotate: activeTab === "activity" ? [0, -10, 10, 0] : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Bell className="h-7 w-7" />
+                </motion.div>
+                <span className="text-sm">Activity</span>
               </TabsTrigger>
 
               <TabsTrigger
-                className="flex flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
-                value="marketplace"
+                className="relative flex cursor-pointer flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-4 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
+                value="explore"
               >
-                <ShoppingCart className="h-6 w-6" />
-                <span className="text-xs">Marketplace</span>
+                <motion.div
+                  animate={{
+                    scale: activeTab === "explore" ? 1.1 : 1,
+                    rotate: activeTab === "explore" ? [0, -10, 10, 0] : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Compass className="h-7 w-7" />
+                </motion.div>
+                <span className="text-sm">Explore</span>
               </TabsTrigger>
             </TabsList>
           </div>

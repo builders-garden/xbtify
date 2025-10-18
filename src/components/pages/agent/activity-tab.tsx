@@ -80,13 +80,13 @@ export function ActivityTab({ agentId }: ActivityTabProps) {
       >
         <TabsList className="grid w-full grid-cols-2 rounded-2xl border border-white/10 bg-white/5 backdrop-blur">
           <TabsTrigger
-            className="rounded-xl text-white/60 transition data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            className="rounded-xl text-white/60 transition hover:cursor-pointer data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
             value="answers"
           >
             Answers
           </TabsTrigger>
           <TabsTrigger
-            className="rounded-xl text-white/60 transition data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            className="rounded-xl text-white/60 transition hover:cursor-pointer data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
             value="review"
           >
             Review

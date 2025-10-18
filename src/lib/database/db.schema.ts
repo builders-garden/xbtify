@@ -99,13 +99,28 @@ export const agentTable = pgTable(
     creatorFid: integer("creator_fid")
       .notNull()
       .references(() => userTable.farcasterFid, { onDelete: "cascade" }),
-    basePrompt: text("base_prompt"),
-    customPrompt: text("custom_prompt"),
-    finalPrompt: text("final_prompt"),
+    // prompt custom sections
+    styleProfilePrompt: text("style_profile_prompt"),
+    topicPatternsPrompt: text("topic_patterns_prompt"),
+    keywords: text("keywords"),
+    // custom prompt questions
+    personality: text("personality"), // degen, artist, business, builder
+    tone: text("tone"), // formal, enthusiastic, humorous, irreverent
+    movieCharacter: text("movie_character"), // hero, villain, supporting, mentor
+    // farcaster user data
+    username: text("username"),
+    displayName: text("display_name"),
+    avatarUrl: text("avatar_url"),
+    address: text("address"),
+    privateKey: text("private_key"),
+    mnemonic: text("mnemonic"),
+    signerUuid: text("signer_uuid"),
+
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
       .$onUpdate(() => new Date()),
+    status: text("status").notNull(),
   },
   (t) => [index("idx_agent_creator_fid").on(t.creatorFid)]
 );
