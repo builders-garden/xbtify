@@ -61,11 +61,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   }, [progressIndex, onComplete]);
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-b from-[#1a0b2e] via-[#2d1b4e] to-[#1e1b4b] p-6">
-      {/* Background blurs */}
-      <div className="absolute top-20 left-20 h-96 w-96 rounded-full bg-purple-500 opacity-20 blur-3xl" />
-      <div className="absolute right-20 bottom-20 h-96 w-96 rounded-full bg-indigo-600 opacity-30 blur-3xl" />
-
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden p-6">
       {/* Content */}
       <div className="relative z-10 flex w-full max-w-md flex-col items-center space-y-8">
         {/* Icon with emoji */}

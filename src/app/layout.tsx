@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 import { preconnect } from "react-dom";
 import Providers from "@/components/providers";
+import { VideoBackground } from "@/components/shared/video-background";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { env } from "@/lib/env";
@@ -26,6 +27,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${gabarito.className} size-full antialiased`}>
+        <VideoBackground />
         <Providers cookie={cookie}>
           {children}
           <Suspense>

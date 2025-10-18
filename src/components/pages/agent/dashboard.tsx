@@ -17,10 +17,7 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
   const [activeTab, setActiveTab] = useState("my-agent");
 
   return (
-    <div className="relative flex min-h-screen w-full justify-center overflow-hidden bg-gradient-to-b from-[#1a0b2e] via-[#2d1b4e] to-[#1e1b4b]">
-      <div className="absolute top-12 left-12 h-80 w-80 rounded-full bg-purple-500/20 blur-3xl" />
-      <div className="absolute right-16 bottom-16 h-96 w-96 rounded-full bg-indigo-600/30 blur-3xl" />
-
+    <div className="relative flex min-h-screen w-full justify-center overflow-hidden">
       <div className="relative z-10 flex w-full max-w-3xl flex-col text-white">
         <Tabs
           className="flex h-screen w-full flex-col"
