@@ -1,69 +1,253 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
 
 type MainFlowProps = {
   onCreateAgent: () => void;
   onViewMarketplace: () => void;
 };
 
+type Message = {
+  id: number;
+  username: string;
+  text: string;
+  isAgent: boolean;
+  pfpUrl?: string;
+};
+
+const MOCK_MESSAGES = [
+  {
+    username: "thedude",
+    text: "Hey @{username}, thoughts on the latest Farcaster updates?",
+    pfpUrl: "/images/thedude.avif",
+  },
+  {
+    isAgent: true,
+    text: "The protocol improvements are solid. Channels are getting way more engaging.",
+  },
+  {
+    username: "thedude",
+    text: "Which channels are you active in?",
+    pfpUrl: "/images/thedude.avif",
+  },
+  {
+    isAgent: true,
+    text: "Mostly builders and base. The conversations there are always worth following.",
+  },
+];
+
+function TypingText({
+  text,
+  onComplete,
+}: {
+  text: string;
+  onComplete: () => void;
+}) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText((prev) => prev + text[currentIndex]);
+        setCurrentIndex((prev) => prev + 1);
+      }, 30); // Typing speed
+      return () => clearTimeout(timeout);
+    }
+
+    if (currentIndex === text.length && onComplete) {
+      const timeout = setTimeout(onComplete, 800); // Wait before next message
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, text, onComplete]);
+
+  return <span>{displayedText}</span>;
+}
+
 export function MainFlow({ onCreateAgent, onViewMarketplace }: MainFlowProps) {
+  const { user } = useAuth();
+  const [visibleMessages, setVisibleMessages] = useState<Message[]>([]);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Get agent username from authenticated user - memoize to prevent changes
+  const agentUsername = user?.farcasterUsername
+    ? `${user.farcasterUsername}XBT`
+    : "casoXBT";
+  const username = user?.farcasterUsername ?? "caso";
+  const agentPfpUrl = user?.farcasterAvatarUrl;
+
+  // Initialize first message only once
+  useEffect(() => {
+    if (!hasInitialized && currentMessageIndex === 0) {
+      const mockMsg = MOCK_MESSAGES[0];
+      const message: Message = {
+        id: 0,
+        username: mockMsg.username ?? "user",
+        text: mockMsg.text.replace("{username}", username),
+        isAgent: false,
+        pfpUrl: mockMsg.pfpUrl,
+      };
+      setVisibleMessages([message]);
+      setHasInitialized(true);
+    }
+  }, [hasInitialized, username, currentMessageIndex]);
+
+  const handleTypingComplete = () => {
+    const nextIndex = currentMessageIndex + 1;
+
+    if (nextIndex < MOCK_MESSAGES.length) {
+      const mockMsg = MOCK_MESSAGES[nextIndex];
+      const message: Message = {
+        id: nextIndex,
+        username: mockMsg.isAgent
+          ? agentUsername
+          : (mockMsg.username ?? "user"),
+        text: mockMsg.isAgent
+          ? mockMsg.text
+          : mockMsg.text.replace("{username}", username),
+        isAgent: !!mockMsg.isAgent,
+        pfpUrl: mockMsg.isAgent ? (agentPfpUrl ?? undefined) : mockMsg.pfpUrl,
+      };
+
+      setVisibleMessages((prev) => [...prev, message]);
+      setCurrentMessageIndex(nextIndex);
+    }
+  };
+
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden p-6">
-      {/* Content */}
-      <div className="relative z-10 flex w-full max-w-md flex-col items-center space-y-8 text-center">
-        {/* Icon */}
-        <div className="relative">
-          <div className="flex h-32 w-32 items-center justify-center rounded-3xl border-4 border-white/10 bg-gradient-to-b from-purple-500 to-indigo-600 shadow-xl">
-            <svg
-              className="h-20 w-20 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+    <div className="relative flex h-screen w-full flex-col overflow-hidden">
+      {/* Top Section - Header and Messages */}
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-start px-6 pt-8 pb-4">
+        <div className="w-full max-w-2xl space-y-6">
+          {/* Header */}
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+            initial={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.h1
+              animate={{ opacity: 1 }}
+              className="mb-3 bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-3xl text-transparent"
+              initial={{ opacity: 0 }}
             >
-              <title>Bot Icon</title>
-              <path
-                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-              />
-            </svg>
-          </div>
-          <div className="-top-6 -right-6 absolute text-3xl">⚡</div>
-          <div className="-bottom-2 -left-4 absolute text-2xl">💥</div>
-        </div>
+              Your AI twin, online 24/7
+            </motion.h1>
+            <p className="text-base text-indigo-300/80">
+              Scale yourself. Answers mentions and replies in DMs automatically.
+            </p>
+          </motion.div>
 
-        {/* Title & Description */}
-        <div className="space-y-4">
-          <h1 className="font-bold text-4xl text-white">Welcome to Xbtify</h1>
-          <p className="text-indigo-200 text-lg">
-            Create your AI chaos twin that vibes just like you on Farcaster
-          </p>
-        </div>
-
-        {/* CTAs */}
-        <div className="flex w-full flex-col gap-4">
-          <Button
-            className="h-14 w-full rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 font-semibold text-lg text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-            onClick={onCreateAgent}
+          {/* Messages */}
+          <motion.div
+            animate={{ opacity: 1 }}
+            className="w-full space-y-6"
+            initial={{ opacity: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Create Your Agent 🚀
-          </Button>
+            <AnimatePresence>
+              {visibleMessages.map((message, index) => (
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex gap-3 ${message.isAgent ? "flex-row-reverse" : "flex-row"}`}
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  key={message.id}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Avatar */}
+                  <div className="flex-shrink-0">
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 ${
+                        message.isAgent
+                          ? "border-purple-500 bg-gradient-to-br from-purple-500 to-indigo-600"
+                          : "border-white/20 bg-white/10"
+                      }`}
+                    >
+                      {message.pfpUrl ? (
+                        <Image
+                          alt={message.username}
+                          className={message.isAgent ? "invert" : ""}
+                          height={40}
+                          src={message.pfpUrl}
+                          width={40}
+                        />
+                      ) : (
+                        <span className="text-lg">
+                          {message.isAgent ? "🤖" : "👤"}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-          <Button
-            className="h-14 w-full rounded-2xl border-2 border-white/20 bg-white/5 font-medium text-lg text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/10"
-            onClick={onViewMarketplace}
-            variant="outline"
-          >
-            View Other Agents 👀
-          </Button>
+                  {/* Message bubble */}
+                  <div
+                    className={`max-w-[80%] space-y-1 ${message.isAgent ? "items-end" : "items-start"} flex flex-col`}
+                  >
+                    <span
+                      className={`font-medium text-xs ${
+                        message.isAgent ? "text-purple-300" : "text-indigo-300"
+                      }`}
+                    >
+                      @{message.username}
+                    </span>
+                    <div
+                      className={`rounded-2xl p-2 py-1 ${
+                        message.isAgent
+                          ? "border border-purple-500/30 bg-gradient-to-br from-purple-500/20 to-indigo-600/20"
+                          : "border border-white/20 bg-white/10"
+                      }`}
+                    >
+                      <p className="text-sm text-white">
+                        {index === visibleMessages.length - 1 ? (
+                          <TypingText
+                            onComplete={handleTypingComplete}
+                            text={message.text}
+                          />
+                        ) : (
+                          message.text
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         </div>
+      </div>
 
-        {/* Footer hint */}
-        <p className="text-indigo-300/60 text-sm">
-          Your agent will learn from your posts and interact with your style
-        </p>
+      {/* Bottom Section - CTAs and Footer (Fixed) */}
+      <div className="relative z-10 w-full px-6 pb-8">
+        <div className="mx-auto w-full max-w-2xl space-y-4">
+          {/* CTAs */}
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="flex w-full flex-col gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Button
+              className="h-12 w-full rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 font-semibold text-base text-white shadow-lg transition-transform hover:scale-105 hover:cursor-pointer active:scale-95"
+              onClick={onCreateAgent}
+            >
+              Create your Twin Now 🚀
+            </Button>
+
+            <Button
+              className="h-11 w-full rounded-2xl border-2 border-white/20 bg-white/5 font-medium text-sm text-white backdrop-blur-sm transition-all hover:cursor-pointer hover:border-white/40 hover:bg-white/10 hover:text-white"
+              onClick={onViewMarketplace}
+              variant="outline"
+            >
+              View Other Agents 👀
+            </Button>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

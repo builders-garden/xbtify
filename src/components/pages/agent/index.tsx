@@ -7,24 +7,34 @@ import type { Agent } from "@/types/agent.type";
 import { Dashboard } from "./dashboard";
 import { LoadingScreen } from "./loading-screen";
 import { MainFlow } from "./main-flow";
+import { OnboardingQuestions } from "./onboarding-questions";
+
+type FlowState = "main" | "onboarding" | "loading";
 
 export function AgentPage() {
-  const [isCreating, setIsCreating] = useState(false);
+  const [flowState, setFlowState] = useState<FlowState>("main");
   const { data: agent, isLoading: isLoadingAgent } = useAgent();
   const createAgent = useCreateAgent();
   const updateAgent = useUpdateAgent();
 
-  const handleCreateAgent = async () => {
-    setIsCreating(true);
+  const handleStartOnboarding = () => {
+    setFlowState("onboarding");
+  };
 
+  const handleOnboardingComplete = async (answers: Record<string, string>) => {
+    setFlowState("loading");
+
+    // Here you would normally send the answers to your API
+    // For now, we'll just mock the creation process
     try {
+      // TODO: Include onboarding answers in the agent creation
+      console.log("Creating agent with answers:", answers);
       await createAgent.mutateAsync({});
       toast.success("Agent created successfully!");
     } catch (error) {
       console.error("Error creating agent:", error);
       toast.error("Failed to create agent. Please try again.");
-    } finally {
-      setIsCreating(false);
+      setFlowState("main");
     }
   };
 
@@ -43,11 +53,6 @@ export function AgentPage() {
     console.log("View marketplace");
   };
 
-  // Show loading screen while creating agent
-  if (isCreating) {
-    return <LoadingScreen />;
-  }
-
   // Show loading state while fetching agent data
   if (isLoadingAgent) {
     return (
@@ -60,16 +65,25 @@ export function AgentPage() {
     );
   }
 
-  // If user doesn't have an agent, show main flow
-  if (!agent) {
-    return (
-      <MainFlow
-        onCreateAgent={handleCreateAgent}
-        onViewMarketplace={handleViewMarketplace}
-      />
-    );
+  // If user has an agent, show dashboard
+  if (agent) {
+    return <Dashboard agent={agent} onUpdateAgent={handleUpdateAgent} />;
   }
 
-  // If user has an agent, show dashboard
-  return <Dashboard agent={agent} onUpdateAgent={handleUpdateAgent} />;
+  // Flow states for agent creation
+  if (flowState === "loading") {
+    return <LoadingScreen />;
+  }
+
+  if (flowState === "onboarding") {
+    return <OnboardingQuestions onComplete={handleOnboardingComplete} />;
+  }
+
+  // Default: show main flow
+  return (
+    <MainFlow
+      onCreateAgent={handleStartOnboarding}
+      onViewMarketplace={handleViewMarketplace}
+    />
+  );
 }

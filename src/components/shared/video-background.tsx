@@ -11,17 +11,17 @@ export function VideoBackground() {
         muted
         playsInline
       >
-        <source src="/videos/background2.mp4" type="video/mp4" />
+        <source src="/videos/background3.mp4" type="video/mp4" />
       </video>
 
       {/* Blur overlay */}
-      <div className="absolute inset-0 backdrop-blur-sm" />
+      <div className="absolute inset-0 backdrop-blur-md" />
 
       {/* Dark gradient overlay for better readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black/80" />
 
       {/* Purple/Indigo tint to match the theme */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-indigo-900/30 to-blue-900/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-indigo-900/40 to-blue-900/40" />
     </div>
   );
 }
