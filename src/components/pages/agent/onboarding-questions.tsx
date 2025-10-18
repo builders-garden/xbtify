@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 type AnswerOption = {
   text: string;
   emoji: string;
-  icon: string;
 };
 
 type Question = {
@@ -21,30 +20,30 @@ const QUESTIONS: Question[] = [
     id: "personality",
     question: "Choose your vibe 🔉",
     answers: [
-      { text: "Builder", emoji: "👷", icon: "🔨" },
-      { text: "Artist", emoji: "🎨", icon: "🖼️" },
-      { text: "Business", emoji: "💼", icon: "📊" },
-      { text: "Degen", emoji: "🎲", icon: "🚀" },
+      { text: "Builder", emoji: "👷" },
+      { text: "Artist", emoji: "🎨" },
+      { text: "Business", emoji: "💼" },
+      { text: "Degen", emoji: "🎲" },
     ],
   },
   {
     id: "tone",
     question: "Pick your talking style 🗣️",
     answers: [
-      { text: "Formal", emoji: "🎩", icon: "📝" },
-      { text: "Enthusiastic", emoji: "🔥", icon: "⚡" },
-      { text: "Irreverent", emoji: "😎", icon: "🤘" },
-      { text: "Humorous", emoji: "😂", icon: "🎭" },
+      { text: "Formal", emoji: "🎩" },
+      { text: "Enthusiastic", emoji: "🔥" },
+      { text: "Irreverent", emoji: "😎" },
+      { text: "Humorous", emoji: "😂" },
     ],
   },
   {
     id: "character",
     question: "If your agent was a character in a movie, who would they be?",
     answers: [
-      { text: "Mastermind", emoji: "🧠", icon: "👑" },
-      { text: "Buddy", emoji: "🤝", icon: "⭐" },
-      { text: "Comic Relief", emoji: "🤡", icon: "🎪" },
-      { text: "Villain", emoji: "😈", icon: "💜" },
+      { text: "Mastermind", emoji: "🧠" },
+      { text: "Buddy", emoji: "🤝" },
+      { text: "Comic Relief", emoji: "🤡" },
+      { text: "Villain", emoji: "😈" },
     ],
   },
 ];

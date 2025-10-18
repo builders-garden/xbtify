@@ -44,7 +44,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 pb-20 text-white">
+    <div className="flex flex-col gap-4 pb-24 text-white">
       {/* Agent Header */}
       <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
         <UserAvatar

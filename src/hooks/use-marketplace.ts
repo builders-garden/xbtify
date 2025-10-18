@@ -3,14 +3,24 @@
 import type { MarketplaceAgent } from "@/types/agent.type";
 import { useApiQuery } from "./use-api-query";
 
+type MarketplaceAgentsResponse = {
+  status: "ok" | "nok";
+  agents: MarketplaceAgent[];
+};
+
 /**
  * Hook to fetch marketplace agents
  */
 export function useMarketplaceAgents() {
-  return useApiQuery<MarketplaceAgent[]>({
+  const query = useApiQuery<MarketplaceAgentsResponse>({
     queryKey: ["marketplace", "agents"],
     url: "/api/marketplace/agents",
   });
+
+  return {
+    ...query,
+    data: query.data?.agents || [],
+  };
 }
 
 /**

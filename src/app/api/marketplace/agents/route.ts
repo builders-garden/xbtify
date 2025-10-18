@@ -1,52 +1,53 @@
 import { NextResponse } from "next/server";
+import { getAgentsByFid } from "@/lib/database/queries/agent.query";
+import { fetchBulkUsersFromNeynar } from "@/lib/neynar";
+import type { MarketplaceAgent } from "@/types/agent.type";
 
 /**
  * GET /api/marketplace/agents
  * Fetch all marketplace agents
+ * Currently filtered to show only agents with fid = 1391657
  * No authentication required - this is public data
  */
-export function GET() {
+export async function GET() {
   try {
-    // TODO: Fetch marketplace agents from database
-    // const agents = await getMarketplaceAgents();
+    // Fetch agents with specific FID (for testing)
+    const TARGET_FID = 1391657;
+    const agents = await getAgentsByFid(TARGET_FID);
 
-    // Mock response for now
-    const mockAgents = [
-      {
-        id: "market-agent-1",
-        name: "CryptoWhiz",
-        bio: "Your friendly crypto expert who knows all about DeFi, NFTs, and the latest trends",
-        avatarUrl: null,
-        personality: "Knowledgeable and enthusiastic about crypto",
-        totalInteractions: 1337,
-        rating: 4.8,
-        externalUrl: "https://warpcast.com/cryptowhiz",
-      },
-      {
-        id: "market-agent-2",
-        name: "MemeLord",
-        bio: "The dankest memes and the spiciest takes in Web3",
-        avatarUrl: null,
-        personality: "Funny and irreverent with a love for memes",
-        totalInteractions: 9001,
-        rating: 4.9,
-        externalUrl: "https://warpcast.com/memelord",
-      },
-      {
-        id: "market-agent-3",
-        name: "TechGuru",
-        bio: "Deep technical insights about blockchain, smart contracts, and protocols",
-        avatarUrl: null,
-        personality:
-          "Technical and detailed, loves explaining complex concepts",
-        totalInteractions: 567,
-        rating: 4.7,
-        externalUrl: "https://warpcast.com/techguru",
-      },
-    ];
+    // Fetch Neynar data for all agents to get follower counts
+    const fids = agents.map((agent) => agent.fid).join(",");
+    const neynarUsers =
+      fids.length > 0 ? await fetchBulkUsersFromNeynar(fids) : [];
+
+    // Create a map of fid to neynar user for quick lookup
+    const neynarUserMap = new Map(neynarUsers.map((user) => [user.fid, user]));
+
+    // Transform database agents to marketplace format
+    const marketplaceAgents: MarketplaceAgent[] = agents.map((agent) => {
+      const neynarUser = neynarUserMap.get(agent.fid);
+
+      return {
+        id: agent.id,
+        username: agent.username || "unknown",
+        displayName: agent.displayName || agent.username || "Agent",
+        bio:
+          [agent.personality, agent.tone, agent.movieCharacter]
+            .filter(Boolean)
+            .join(" • ") ||
+          neynarUser?.profile?.bio?.text ||
+          "An AI agent vibing on Farcaster",
+        avatarUrl: agent.avatarUrl || undefined,
+        messageCount: 0, // TODO: Calculate from activities when available
+        followerCount: neynarUser?.follower_count || 0,
+        externalUrl: agent.username
+          ? `https://warpcast.com/${agent.username}`
+          : "https://warpcast.com",
+      };
+    });
 
     return NextResponse.json(
-      { status: "ok", agents: mockAgents },
+      { status: "ok", agents: marketplaceAgents },
       { status: 200 }
     );
   } catch (err) {
