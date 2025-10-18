@@ -4,7 +4,19 @@ import { z } from "zod";
  * Schema for creating a new agent
  */
 export const createAgentSchema = z.object({
+  fname: z
+    .string()
+    .min(1)
+    .max(16)
+    .regex(/^[a-z0-9-]+$/, {
+      message:
+        "Username must contain only lowercase letters, numbers, and hyphens",
+    }),
+  displayName: z.string().min(1).max(100).optional(),
   personality: z.string().optional(),
+  bio: z.string().max(256).optional(),
+  pfpUrl: z.string().url().optional(),
+  url: z.string().url().optional(),
 });
 
 /**

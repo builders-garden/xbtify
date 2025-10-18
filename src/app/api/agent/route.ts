@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { createFarcasterAccount } from "@/lib/farcaster/account-creation";
 import {
   createAgentSchema,
   updateAgentSchema,
@@ -92,9 +93,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Create agent in database
+    // Create Farcaster account for the agent
+    const farcasterAccount = await createFarcasterAccount({
+      fname: parsed.data.fname,
+      displayName: parsed.data.displayName,
+      bio: parsed.data.bio,
+      pfpUrl: parsed.data.pfpUrl,
+      url: parsed.data.url,
+    });
+
+    console.log("Farcaster account created:", {
+      fid: farcasterAccount.fid,
+      fname: farcasterAccount.fname,
+      custodyAddress: farcasterAccount.custodyAddress,
+    });
+
+    // TODO: Create agent in database with Farcaster account details
     // const agent = await createAgent({
     //   userId: authUser.id,
+    //   fid: farcasterAccount.fid,
+    //   custodyAddress: farcasterAccount.custodyAddress,
+    //   privateKey: farcasterAccount.privateKey, // Store securely!
     //   personality: parsed.data.personality,
     // });
 
@@ -102,14 +121,16 @@ export async function POST(request: NextRequest) {
     const mockAgent = {
       id: "agent-1",
       userId: authUser.id,
-      name: authUser.farcasterUsername || authUser.username || "Agent",
-      bio: authUser.farcasterDisplayName || null,
-      avatarUrl: authUser.farcasterAvatarUrl || authUser.avatarUrl || null,
+      fid: farcasterAccount.fid,
+      name: farcasterAccount.fname,
+      bio: parsed.data.bio || null,
+      avatarUrl: parsed.data.pfpUrl || null,
       personality: parsed.data.personality || "A friendly and helpful AI agent",
       chaosLevel: 50,
       autoRespond: true,
       dmEnabled: false,
       totalInteractions: 0,
+      custodyAddress: farcasterAccount.custodyAddress,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

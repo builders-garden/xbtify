@@ -101,3 +101,80 @@ export const fetchUserByAddress = async (
   const userArray = data[address.toLowerCase()];
   return userArray && userArray.length > 0 ? userArray[0] : undefined;
 };
+
+/**
+ * Fetch a fresh FID from Neynar for account creation
+ * @returns The FID
+ */
+export const fetchFreshFid = async (): Promise<number> => {
+  const fidResponse = await ky
+    .get<{ fid: number }>("https://api.neynar.com/v2/farcaster/user/fid", {
+      headers: {
+        "x-api-key": env.NEYNAR_API_KEY,
+      },
+    })
+    .json();
+
+  return fidResponse.fid;
+};
+
+/**
+ * Check if a Farcaster username is available
+ * @param fname - The username to check
+ * @returns Whether the username is available
+ */
+export const checkFnameAvailability = async (
+  fname: string
+): Promise<boolean> => {
+  const response = await ky
+    .get<{ available: boolean }>(
+      "https://api.neynar.com/v2/farcaster/fname/availability",
+      {
+        searchParams: { fname },
+        headers: {
+          "x-api-key": env.NEYNAR_API_KEY,
+        },
+      }
+    )
+    .json();
+
+  return response.available;
+};
+
+/**
+ * Register a new Farcaster account with Neynar
+ * @param params - The registration parameters
+ * @returns The registration response
+ */
+export const registerFarcasterAccount = async (params: {
+  fid: number;
+  signature: string;
+  custodyAddress: string;
+  deadline: number;
+  fname: string;
+  metadata: {
+    bio: string;
+    pfp_url: string;
+    url: string;
+    display_name: string;
+  };
+}): Promise<{ success: boolean }> => {
+  const registerResponse = await ky
+    .post("https://api.neynar.com/v2/farcaster/user", {
+      headers: {
+        "x-api-key": env.NEYNAR_API_KEY,
+        "Content-Type": "application/json",
+      },
+      json: {
+        fid: params.fid,
+        signature: params.signature,
+        requested_user_custody_address: params.custodyAddress,
+        deadline: params.deadline,
+        fname: params.fname,
+        metadata: params.metadata,
+      },
+    })
+    .json<{ success: boolean }>();
+
+  return registerResponse;
+};
