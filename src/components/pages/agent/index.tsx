@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAgent, useCreateAgent, useUpdateAgent } from "@/hooks/use-agent";
-import type { Agent } from "@/types/agent.type";
+import type { Agent } from "@/lib/database/db.schema";
 import { Dashboard } from "./dashboard";
 import { LoadingScreen } from "./loading-screen";
 import { MainFlow } from "./main-flow";
@@ -56,11 +57,23 @@ export function AgentPage() {
   // Show loading state while fetching agent data
   if (isLoadingAgent) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
-          <p className="text-gray-600 text-sm">Loading...</p>
-        </div>
+      <div className="relative flex h-screen w-full flex-col items-center justify-center gap-6">
+        {/* Glow effect behind image */}
+
+        <Image
+          alt="Loading"
+          className="relative z-50 w-full max-w-[16rem] rounded-3xl brightness-110 contrast-125"
+          height={640}
+          priority
+          src="/images/loading.gif"
+          style={{
+            mixBlendMode: "screen",
+          }}
+          unoptimized
+          width={360}
+        />
+
+        <p className="font-semibold text-lg text-white">LOADING...</p>
       </div>
     );
   }

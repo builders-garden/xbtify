@@ -1,10 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { motion } from "motion/react";
+import Image from "next/image";
+import type { Address } from "viem";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import type { Agent } from "@/types/agent.type";
+import { useUsdcBalance } from "@/hooks/use-usdc-balance";
+import type { Agent } from "@/lib/database/db.schema";
 
 type MyAgentTabProps = {
   agent: Agent;
@@ -12,192 +21,277 @@ type MyAgentTabProps = {
 };
 
 export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
-  const [personality, setPersonality] = useState(agent.personality || "");
-  const [chaosLevel, setChaosLevel] = useState(agent.chaosLevel || 50);
-  const [autoRespond, setAutoRespond] = useState(
-    agent.settings?.autoRespond ?? true
-  );
-  const [dmEnabled, setDmEnabled] = useState(
-    agent.settings?.dmEnabled ?? false
-  );
-  const [isEditing, setIsEditing] = useState(false);
+  // Fetch USDC balance
+  const { balance, isLoading: isLoadingBalance } = useUsdcBalance({
+    address: agent.address as Address | undefined,
+    enabled: !!agent.address,
+  });
 
-  const handleSave = () => {
-    onUpdateAgent({
-      personality,
-      chaosLevel,
-      settings: {
-        ...(agent.settings || {}),
-        autoRespond,
-        dmEnabled,
-      },
-    });
-    setIsEditing(false);
+  // Parse the styleProfilePrompt JSON if it exists
+  let styleProfile: {
+    vocabulary?: {
+      common_phrases?: string[];
+      jargon?: string[];
+    };
+    keywords?: Record<string, string>;
+    tone?: string;
+  } | null = null;
+
+  try {
+    if (agent.styleProfilePrompt) {
+      styleProfile = JSON.parse(agent.styleProfilePrompt);
+    }
+  } catch {
+    // Invalid JSON, ignore
+  }
+
+  const handlePersonalityChange = (value: string) => {
+    onUpdateAgent({ personality: value || undefined });
   };
 
-  const handleCancel = () => {
-    setPersonality(agent.personality || "");
-    setChaosLevel(agent.chaosLevel || 50);
-    setAutoRespond(agent.settings?.autoRespond ?? true);
-    setDmEnabled(agent.settings?.dmEnabled ?? false);
-    setIsEditing(false);
+  const handleToneChange = (value: string) => {
+    onUpdateAgent({ tone: value || undefined });
+  };
+
+  const handleMovieCharacterChange = (value: string) => {
+    onUpdateAgent({ movieCharacter: value || undefined });
+  };
+
+  const formatUSDC = (value: string) => {
+    const num = Number.parseFloat(value);
+    return new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(num);
   };
 
   return (
-    <div className="flex flex-col gap-4 pb-24 text-white">
+    <div className="flex flex-col gap-4 pb-28 text-white">
       {/* Agent Header */}
-      <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+      <motion.div
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-3 rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+        initial={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+      >
         <UserAvatar
-          alt={agent.name}
+          alt={agent.displayName || agent.username || "Agent"}
           avatarUrl={agent.avatarUrl ?? null}
           size="xl"
         />
-        <div className="flex flex-col">
-          <h2 className="font-semibold text-white text-xl">{agent.name}</h2>
-          <p className="text-sm text-white/60">@{agent.username}</p>
-        </div>
-      </div>
-
-      {/* Agent Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="flex flex-col items-center rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-          <p className="font-semibold text-2xl text-white">
-            {agent.stats?.totalReplies ?? 0}
-          </p>
-          <p className="text-white/60 text-xs">Replies</p>
-        </div>
-        <div className="flex flex-col items-center rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-          <p className="font-semibold text-2xl text-white">
-            {agent.stats?.pendingReview ?? 0}
-          </p>
-          <p className="text-white/60 text-xs">Pending</p>
-        </div>
-        <div className="flex flex-col items-center rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-          <p className="font-semibold text-2xl text-white">
-            {agent.stats?.vibeScore ?? 0}
-          </p>
-          <p className="text-white/60 text-xs">Vibe Score</p>
-        </div>
-      </div>
-
-      {/* Personality Configuration */}
-      <div className="flex flex-col gap-2">
-        <Label className="text-white/80" htmlFor="personality">
-          Agent Personality
-        </Label>
-        <textarea
-          className="min-h-32 w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-          id="personality"
-          onChange={(e) => {
-            setPersonality(e.target.value);
-            setIsEditing(true);
-          }}
-          placeholder="Describe your agent's personality, tone, and style..."
-          value={personality}
-        />
-      </div>
-
-      {/* Chaos Level Slider */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <Label className="text-white/80" htmlFor="chaos-level">
-            Chaos Level
-          </Label>
-          <span className="font-medium text-sm text-white/80">
-            {chaosLevel}%
-          </span>
-        </div>
-        <input
-          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/20 accent-purple-500"
-          id="chaos-level"
-          max="100"
-          min="0"
-          onChange={(e) => {
-            setChaosLevel(Number(e.target.value));
-            setIsEditing(true);
-          }}
-          type="range"
-          value={chaosLevel}
-        />
-        <p className="text-white/60 text-xs">
-          Higher chaos = more unpredictable and creative responses
-        </p>
-      </div>
-
-      {/* Settings Toggles */}
-      <div className="flex flex-col gap-4">
-        <h3 className="font-semibold text-white/90">Settings</h3>
-
-        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-          <div className="flex flex-col gap-1">
-            <p className="font-medium text-white">Auto-respond</p>
-            <p className="text-white/60 text-xs">
-              Automatically reply to mentions
+        <div className="flex flex-1 flex-col">
+          <h2 className="font-bold text-2xl text-white">
+            {agent.displayName || agent.username}
+          </h2>
+          <p className="text-purple-200/60 text-sm">@{agent.username}</p>
+          {agent.address && (
+            <p className="mt-1 font-mono text-purple-200/40 text-xs">
+              {agent.address.slice(0, 6)}...{agent.address.slice(-4)}
             </p>
+          )}
+        </div>
+      </motion.div>
+
+      {/* USDC Balance */}
+      {agent.address && (
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="overflow-hidden rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+          initial={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-200/60 text-sm">Agent Balance</p>
+              {isLoadingBalance ? (
+                <Skeleton className="mt-1 h-9 w-48 bg-purple-500/20" />
+              ) : (
+                <p className="mt-1 bg-gradient-to-r from-purple-300 to-purple-400 bg-clip-text font-bold text-3xl text-transparent">
+                  ${balance ? formatUSDC(balance.formatted) : "0.00"} USDC
+                </p>
+              )}
+            </div>
+            <div className="relative right-4 h-14 w-14 scale-[4] hue-rotate-[42deg]">
+              <Image
+                alt="Dollar"
+                className="object-contain"
+                fill
+                src="/images/dollar.png"
+              />
+            </div>
           </div>
-          <button
-            className={`relative inline-flex h-6 w-12 items-center rounded-full border border-white/10 transition-colors ${
-              autoRespond
-                ? "bg-gradient-to-r from-purple-500 to-indigo-500"
-                : "bg-white/10"
-            }`}
-            onClick={() => {
-              setAutoRespond(!autoRespond);
-              setIsEditing(true);
-            }}
-            type="button"
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                autoRespond ? "translate-x-6" : "translate-x-1"
-              }`}
-            />
-          </button>
+        </motion.div>
+      )}
+
+      {/* Agent Configuration */}
+      <motion.div
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+        initial={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+      >
+        <div className="mb-3">
+          <h3 className="font-bold text-lg text-white">Agent Configuration</h3>
         </div>
 
-        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-          <div className="flex flex-col gap-1">
-            <p className="font-medium text-white">DMs Enabled</p>
-            <p className="text-white/60 text-xs">Allow direct messages</p>
+        <div className="space-y-3">
+          {/* Personality */}
+          <div>
+            <p className="mb-1.5 block text-purple-200/80 text-sm">
+              Personality
+            </p>
+            <Select
+              onValueChange={handlePersonalityChange}
+              value={agent.personality || ""}
+            >
+              <SelectTrigger className="w-full border-purple-400/30 bg-purple-500/10 text-white focus:ring-purple-500/60">
+                <SelectValue placeholder="Select personality..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="builder">👷 Builder</SelectItem>
+                <SelectItem value="artist">🎨 Artist</SelectItem>
+                <SelectItem value="business">💼 Business</SelectItem>
+                <SelectItem value="degen">🎲 Degen</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <button
-            className={`relative inline-flex h-6 w-12 items-center rounded-full border border-white/10 transition-colors ${
-              dmEnabled
-                ? "bg-gradient-to-r from-purple-500 to-indigo-500"
-                : "bg-white/10"
-            }`}
-            onClick={() => {
-              setDmEnabled(!dmEnabled);
-              setIsEditing(true);
-            }}
-            type="button"
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                dmEnabled ? "translate-x-6" : "translate-x-1"
-              }`}
-            />
-          </button>
-        </div>
-      </div>
 
-      {/* Save/Cancel Buttons */}
-      {isEditing && (
-        <div className="flex gap-2">
-          <Button
-            className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg transition hover:from-purple-400 hover:to-indigo-400"
-            onClick={handleSave}
-          >
-            Save Changes
-          </Button>
-          <Button
-            className="flex-1 border-white/30 bg-white/10 text-white hover:bg-white/20"
-            onClick={handleCancel}
-            variant="outline"
-          >
-            Cancel
-          </Button>
+          {/* Tone */}
+          <div>
+            <p className="mb-1.5 block text-purple-200/80 text-sm">Tone</p>
+            <Select onValueChange={handleToneChange} value={agent.tone || ""}>
+              <SelectTrigger className="w-full border-purple-400/30 bg-purple-500/10 text-white focus:ring-purple-500/60">
+                <SelectValue placeholder="Select tone..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="formal">🎩 Formal</SelectItem>
+                <SelectItem value="enthusiastic">🔥 Enthusiastic</SelectItem>
+                <SelectItem value="irreverent">😎 Irreverent</SelectItem>
+                <SelectItem value="humorous">😂 Humorous</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Movie Character */}
+          <div>
+            <p className="mb-1.5 block text-purple-200/80 text-sm">
+              Character Type
+            </p>
+            <Select
+              onValueChange={handleMovieCharacterChange}
+              value={agent.movieCharacter || ""}
+            >
+              <SelectTrigger className="w-full border-purple-400/30 bg-purple-500/10 text-white focus:ring-purple-500/60">
+                <SelectValue placeholder="Select character..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mastermind">🧠 Mastermind</SelectItem>
+                <SelectItem value="buddy">🤝 Buddy</SelectItem>
+                <SelectItem value="comic relief">🤡 Comic Relief</SelectItem>
+                <SelectItem value="villain">😈 Villain</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+      </motion.div>
+
+      {/* Style Profile - Common Phrases */}
+      {styleProfile?.vocabulary?.common_phrases &&
+        styleProfile.vocabulary.common_phrases.length > 0 && (
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+          >
+            <h3 className="mb-3 font-bold text-lg text-white">
+              Common Phrases 💬
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {styleProfile.vocabulary.common_phrases
+                .slice(0, 8)
+                .map((phrase) => (
+                  <span
+                    className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-sm"
+                    key={phrase}
+                  >
+                    "{phrase}"
+                  </span>
+                ))}
+            </div>
+          </motion.div>
+        )}
+
+      {/* Style Profile - Jargon */}
+      {styleProfile?.vocabulary?.jargon &&
+        styleProfile.vocabulary.jargon.length > 0 && (
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+          >
+            <h3 className="mb-3 font-bold text-lg text-white">
+              Vocabulary & Jargon 🗣️
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {styleProfile.vocabulary.jargon.slice(0, 15).map((word) => (
+                <span
+                  className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-sm"
+                  key={word}
+                >
+                  {word}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+      {/* Style Profile - Keywords/Topics */}
+      {styleProfile?.keywords &&
+        Object.keys(styleProfile.keywords).length > 0 && (
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+          >
+            <h3 className="mb-3 font-bold text-lg text-white">
+              Topics & Expertise 🎯
+            </h3>
+            <div className="space-y-2">
+              {Object.entries(styleProfile.keywords)
+                .slice(0, 5)
+                .map(([key, description]) => (
+                  <div
+                    className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
+                    key={key}
+                  >
+                    <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
+                      {key.replace(/_/g, " ")}
+                    </h4>
+                    <p className="text-purple-200/70 text-xs">{description}</p>
+                  </div>
+                ))}
+            </div>
+          </motion.div>
+        )}
+
+      {/* Style Profile - Tone Description */}
+      {styleProfile?.tone && (
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+          initial={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3, delay: 0.6 }}
+        >
+          <h3 className="mb-2 font-bold text-lg text-white">
+            Communication Style ✨
+          </h3>
+          <p className="text-purple-200/80 text-sm leading-relaxed">
+            {styleProfile.tone}
+          </p>
+        </motion.div>
       )}
     </div>
   );

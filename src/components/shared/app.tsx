@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AppProvider } from "@/contexts/app-context";
 import { useAuth } from "@/contexts/auth-context";
 import { useFarcaster } from "@/contexts/farcaster-context";
@@ -27,9 +28,10 @@ export default function App({
       {!isMiniAppReady && context && !isInMiniApp ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-8">
           <div className="absolute inset-0 bg-black/80" />
-          <div className="relative z-10 flex flex-col items-center gap-4">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-green-500 border-t-transparent" />
-            <p className="font-medium text-black text-xl">Loading...</p>
+          <div className="relative z-10 w-full max-w-md space-y-4">
+            <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
+            <Skeleton className="h-24 w-full rounded-xl bg-purple-500/20" />
+            <Skeleton className="h-24 w-full rounded-xl bg-purple-500/20" />
           </div>
         </div>
       ) : null}

@@ -1,10 +1,10 @@
 "use client";
 
-import { Bell, Compass, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import Image from "next/image";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Agent } from "@/types/agent.type";
+import type { Agent } from "@/lib/database/db.schema";
 import { ActivityTab } from "./activity-tab";
 import { ExploreTab } from "./explore-tab";
 import { MyAgentTab } from "./my-agent-tab";
@@ -93,7 +93,7 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
               />
 
               <TabsTrigger
-                className="relative flex cursor-pointer flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-4 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
+                className="relative flex cursor-pointer flex-col items-center gap-0 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="my-agent"
               >
                 <motion.div
@@ -103,13 +103,19 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <User className="h-7 w-7" />
+                  <Image
+                    alt="My Agent"
+                    className="h-9 w-9"
+                    height={28}
+                    src="/images/my_agent.png"
+                    width={28}
+                  />
                 </motion.div>
                 <span className="text-sm">My Agent</span>
               </TabsTrigger>
 
               <TabsTrigger
-                className="relative flex cursor-pointer flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-4 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
+                className="relative flex cursor-pointer flex-col items-center gap-0 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="activity"
               >
                 <motion.div
@@ -119,13 +125,19 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Bell className="h-7 w-7" />
+                  <Image
+                    alt="Activity"
+                    className="h-9 w-9"
+                    height={28}
+                    src="/images/activity.png"
+                    width={28}
+                  />
                 </motion.div>
                 <span className="text-sm">Activity</span>
               </TabsTrigger>
 
               <TabsTrigger
-                className="relative flex cursor-pointer flex-col items-center gap-1 rounded-none border-none bg-transparent px-4 py-4 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
+                className="relative flex cursor-pointer flex-col items-center gap-0 rounded-none border-none bg-transparent px-4 py-3 text-white/60 transition hover:bg-white/5 data-[state=active]:bg-transparent data-[state=active]:text-white"
                 value="explore"
               >
                 <motion.div
@@ -135,7 +147,13 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Compass className="h-7 w-7" />
+                  <Image
+                    alt="Explore"
+                    className="h-9 w-9 brightness-150"
+                    height={28}
+                    src="/images/explore.png"
+                    width={28}
+                  />
                 </motion.div>
                 <span className="text-sm">Explore</span>
               </TabsTrigger>

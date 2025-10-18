@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import {
@@ -96,8 +97,10 @@ export function ActivityTab({ agentId }: ActivityTabProps) {
         <div className="flex-1 overflow-y-auto">
           <TabsContent className="m-0" value="answers">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <p className="text-white/60">Loading activities...</p>
+              <div className="w-full max-w-2xl space-y-4">
+                <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
+                <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
+                <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
               </div>
             ) : (
               <div className="flex flex-col gap-4">
@@ -126,8 +129,10 @@ export function ActivityTab({ agentId }: ActivityTabProps) {
 
           <TabsContent className="m-0" value="review">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <p className="text-muted-foreground">Loading activities...</p>
+              <div className="w-full max-w-2xl space-y-4">
+                <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
+                <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
+                <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
               </div>
             ) : (
               <div className="flex flex-col gap-4">

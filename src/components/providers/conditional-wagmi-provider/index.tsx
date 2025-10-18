@@ -3,6 +3,7 @@
 import { sdk as miniappSdk } from "@farcaster/miniapp-sdk";
 import type { ReactNode } from "react";
 import { useLayoutEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { wagmiConfigMiniApp } from "@/lib/wagmi";
 import { CustomWagmiProvider } from "./wagmi-provider";
 
@@ -29,7 +30,15 @@ export const ConditionalWagmiProvider = ({
 
   if (isLoading) {
     // Show loading while detecting environment
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen w-full items-center justify-center p-8">
+        <div className="w-full max-w-md space-y-4">
+          <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
+          <Skeleton className="h-24 w-full rounded-xl bg-purple-500/20" />
+          <Skeleton className="h-24 w-full rounded-xl bg-purple-500/20" />
+        </div>
+      </div>
+    );
   }
 
   if (isInMiniApp) {

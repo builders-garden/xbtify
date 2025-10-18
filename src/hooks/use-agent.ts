@@ -1,18 +1,29 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import type { Agent } from "@/types/agent.type";
+import type { Agent } from "@/lib/database/db.schema";
 import { useApiMutation } from "./use-api-mutation";
 import { useApiQuery } from "./use-api-query";
+
+type AgentResponse = {
+  status: "ok" | "nok";
+  agent?: Agent;
+  error?: string;
+};
 
 /**
  * Hook to fetch the current user's agent
  */
 export function useAgent() {
-  return useApiQuery<Agent>({
+  const query = useApiQuery<AgentResponse>({
     queryKey: ["agent"],
     url: "/api/agent",
   });
+
+  return {
+    ...query,
+    data: query.data?.agent,
+  };
 }
 
 /**
@@ -21,7 +32,7 @@ export function useAgent() {
 export function useCreateAgent() {
   const queryClient = useQueryClient();
 
-  return useApiMutation<Agent, { personality?: string }>({
+  const mutation = useApiMutation<AgentResponse, { personality?: string }>({
     mutationKey: ["createAgent"],
     url: "/api/agent",
     method: "POST",
@@ -29,6 +40,14 @@ export function useCreateAgent() {
       queryClient.invalidateQueries({ queryKey: ["agent"] });
     },
   });
+
+  return {
+    ...mutation,
+    mutateAsync: async (variables: { personality?: string }) => {
+      const response = await mutation.mutateAsync(variables);
+      return response.agent;
+    },
+  };
 }
 
 /**
@@ -37,7 +56,7 @@ export function useCreateAgent() {
 export function useUpdateAgent() {
   const queryClient = useQueryClient();
 
-  return useApiMutation<Agent, Partial<Agent>>({
+  const mutation = useApiMutation<AgentResponse, Partial<Agent>>({
     mutationKey: ["updateAgent"],
     url: "/api/agent",
     method: "PATCH",
@@ -46,6 +65,14 @@ export function useUpdateAgent() {
       queryClient.invalidateQueries({ queryKey: ["agent"] });
     },
   });
+
+  return {
+    ...mutation,
+    mutateAsync: async (variables: Partial<Agent>) => {
+      const response = await mutation.mutateAsync(variables);
+      return response.agent;
+    },
+  };
 }
 
 /**

@@ -4,6 +4,7 @@ import { Search, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { useMarketplaceAgents } from "@/hooks/use-marketplace";
 import type { MarketplaceAgent } from "@/types/agent.type";
@@ -58,8 +59,12 @@ export function ExploreTab() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-purple-600/5 py-12 backdrop-blur-sm">
-          <p className="text-purple-200/60">Loading agents...</p>
+        <div className="flex flex-col items-center justify-center">
+          <div className="w-full max-w-sm space-y-4">
+            <Skeleton className="h-24 w-full rounded-xl bg-purple-500/20" />
+            <Skeleton className="h-24 w-full rounded-xl bg-purple-500/20" />
+            <Skeleton className="h-24 w-full rounded-xl bg-purple-500/20" />
+          </div>
         </div>
       ) : (
         <>
@@ -101,7 +106,7 @@ export function ExploreTab() {
           width: isSearchOpen ? "calc(100vw - 2rem)" : "56px",
           maxWidth: isSearchOpen ? "28rem" : "56px",
         }}
-        className="fixed right-4 bottom-24 z-40"
+        className="fixed right-4 bottom-28 z-40"
         initial={{ opacity: 0, width: "56px", maxWidth: "56px" }}
         transition={{
           opacity: { duration: 0.2, delay: 0.3 },

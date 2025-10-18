@@ -1,8 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import {
-  createAgentSchema,
-  updateAgentSchema,
-} from "@/lib/schemas/agent.schema";
+import { getAgentByFid } from "@/lib/database/queries/agent.query";
+import { createAgentSchema } from "@/lib/schemas/agent.schema";
 import { authenticateApi } from "@/utils/authenticate-api";
 
 /**
@@ -26,29 +24,25 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // TODO: Fetch agent from database
-    // const agent = await getAgentByUserId(authUser.id);
+    // Fetch agent from database using Farcaster FID
+    if (!authUser.farcasterFid) {
+      return NextResponse.json(
+        { status: "nok", error: "User does not have a Farcaster FID" },
+        { status: 400 }
+      );
+    }
 
-    // Mock response for now
-    const mockAgent = {
-      id: "agent-1",
-      userId: authUser.id,
-      name: authUser.farcasterUsername || authUser.username || "Agent",
-      bio: authUser.farcasterDisplayName || null,
-      avatarUrl: authUser.farcasterAvatarUrl || authUser.avatarUrl || null,
-      personality: "A friendly and helpful AI agent",
-      chaosLevel: 50,
-      autoRespond: true,
-      dmEnabled: false,
-      totalInteractions: 42,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    const agent = await getAgentByFid(1391657);
+    // const agent = await getAgentByFid(authUser.farcasterFid);
 
-    return NextResponse.json(
-      { status: "ok", agent: mockAgent },
-      { status: 200 }
-    );
+    if (!agent) {
+      return NextResponse.json(
+        { status: "nok", error: "Agent not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ status: "ok", agent }, { status: 200 });
   } catch (err) {
     console.error("Error fetching agent:", err);
     return NextResponse.json(
@@ -83,6 +77,9 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+
+    // For now, we expect the full agent data from onboarding
+    // The createAgentSchema only validates personality, but we'll accept more fields
     const parsed = createAgentSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -92,31 +89,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Create agent in database
-    // const agent = await createAgent({
-    //   userId: authUser.id,
-    //   personality: parsed.data.personality,
-    // });
+    if (!authUser.farcasterFid) {
+      return NextResponse.json(
+        { status: "nok", error: "User does not have a Farcaster FID" },
+        { status: 400 }
+      );
+    }
 
-    // Mock response for now
-    const mockAgent = {
-      id: "agent-1",
-      userId: authUser.id,
-      name: authUser.farcasterUsername || authUser.username || "Agent",
-      bio: authUser.farcasterDisplayName || null,
-      avatarUrl: authUser.farcasterAvatarUrl || authUser.avatarUrl || null,
-      personality: parsed.data.personality || "A friendly and helpful AI agent",
-      chaosLevel: 50,
-      autoRespond: true,
-      dmEnabled: false,
-      totalInteractions: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    // TODO: Implement createAgent with full onboarding data
+    // For now, check if agent already exists
+    const existingAgent = await getAgentByFid(authUser.farcasterFid);
 
+    if (existingAgent) {
+      return NextResponse.json(
+        { status: "nok", error: "Agent already exists for this user" },
+        { status: 409 }
+      );
+    }
+
+    // Return error until we implement full creation
     return NextResponse.json(
-      { status: "ok", agent: mockAgent },
-      { status: 201 }
+      { status: "nok", error: "Agent creation not yet implemented" },
+      { status: 501 }
     );
   } catch (err) {
     console.error("Error creating agent:", err);
@@ -151,39 +145,29 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
-    const parsed = updateAgentSchema.safeParse(body);
+    // Accept any partial agent updates
+    // The old updateAgentSchema only handles frontend fields
+    // We'll accept any fields that match the database schema
 
-    if (!parsed.success) {
+    if (!authUser.farcasterFid) {
       return NextResponse.json(
-        { status: "nok", error: parsed.error.message },
+        { status: "nok", error: "User does not have a Farcaster FID" },
         { status: 400 }
       );
     }
 
-    // TODO: Update agent in database
-    // const agent = await updateAgent(authUser.id, parsed.data);
+    const agent = await getAgentByFid(authUser.farcasterFid);
 
-    // Mock response for now
-    const mockAgent = {
-      id: "agent-1",
-      userId: authUser.id,
-      name: authUser.farcasterUsername || authUser.username || "Agent",
-      bio: authUser.farcasterDisplayName || null,
-      avatarUrl: authUser.farcasterAvatarUrl || authUser.avatarUrl || null,
-      personality: parsed.data.personality || "A friendly and helpful AI agent",
-      chaosLevel: parsed.data.chaosLevel ?? 50,
-      autoRespond: parsed.data.autoRespond ?? true,
-      dmEnabled: parsed.data.dmEnabled ?? false,
-      totalInteractions: 42,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    if (!agent) {
+      return NextResponse.json(
+        { status: "nok", error: "Agent not found" },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json(
-      { status: "ok", agent: mockAgent },
-      { status: 200 }
-    );
+    // TODO: Implement updateAgent with database update
+    // For now return the existing agent
+    return NextResponse.json({ status: "ok", agent }, { status: 200 });
   } catch (err) {
     console.error("Error updating agent:", err);
     return NextResponse.json(
@@ -217,12 +201,26 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    // TODO: Delete agent from database
-    // await deleteAgent(authUser.id);
+    if (!authUser.farcasterFid) {
+      return NextResponse.json(
+        { status: "nok", error: "User does not have a Farcaster FID" },
+        { status: 400 }
+      );
+    }
 
+    const agent = await getAgentByFid(authUser.farcasterFid);
+
+    if (!agent) {
+      return NextResponse.json(
+        { status: "nok", error: "Agent not found" },
+        { status: 404 }
+      );
+    }
+
+    // TODO: Implement deleteAgent in database
     return NextResponse.json(
-      { status: "ok", message: "Agent deleted successfully" },
-      { status: 200 }
+      { status: "nok", error: "Agent deletion not yet implemented" },
+      { status: 501 }
     );
   } catch (err) {
     console.error("Error deleting agent:", err);
