@@ -1,3 +1,5 @@
+import type { AgentCast, UserMetadata } from "@/lib/database/db.schema";
+
 export type Agent = {
   id: string;
   username: string;
@@ -54,4 +56,8 @@ export type AgentCreationProgress = {
   stage: "initializing" | "analyzing" | "training" | "complete";
   progress: number; // 0-100
   message: string;
+};
+
+export type AgentCastsWithParentUserMetadata = AgentCast & {
+  parentUserMetadata?: UserMetadata;
 };

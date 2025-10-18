@@ -38,7 +38,7 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
                   <TabsContent className="m-0 h-full" value="feed">
-                    <FeedTab agentId={agent.id} />
+                    <FeedTab agentFid={agent.fid} />
                   </TabsContent>
                 </motion.div>
               )}

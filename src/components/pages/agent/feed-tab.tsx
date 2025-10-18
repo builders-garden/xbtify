@@ -10,53 +10,26 @@ import {
   useApproveActivity,
   useRejectActivity,
 } from "@/hooks/use-activities";
-import type { Activity } from "@/types/agent.type";
+import type { AgentCastsWithParentUserMetadata } from "@/types/agent.type";
 
 type FeedTabProps = {
-  agentId: string;
+  agentFid: number;
 };
 
-export function FeedTab({ agentId }: FeedTabProps) {
+export function FeedTab({ agentFid: agentId }: FeedTabProps) {
   const [activeSubTab, setActiveSubTab] = useState("answers");
-  const { data: activities = [], isLoading } = useAgentActivities(agentId);
+  const { data: activitiesDb, isLoading } = useAgentActivities(agentId);
   const approveActivity = useApproveActivity();
   const rejectActivity = useRejectActivity();
 
-  // Fallback to mock data if API is not ready
-  const mockActivities: Activity[] = [
-    {
-      id: "1",
-      type: "answer",
-      agentReply: "Just vibing with the new crypto trends! 🚀",
-      originalMessage: "@agent what do you think about the market?",
-      originalUser: {
-        username: "cryptofan",
-        fid: 12345,
-      },
-      timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
-      status: "approved",
-    },
-    {
-      id: "2",
-      type: "review",
-      agentReply: "Hmm, that's a spicy take! Let me think about it... 🤔",
-      originalMessage: "@agent controversial opinion on ETH?",
-      originalUser: {
-        username: "ethmaxi",
-        fid: 67890,
-      },
-      timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-      status: "pending",
-    },
-  ];
+  console.log({
+    activitiesDb,
+  });
 
-  // Use API data if available, otherwise use mock data
-  const displayActivities = activities.length > 0 ? activities : mockActivities;
-  const answers = displayActivities.filter((a) => a.type === "answer");
-  const reviews = displayActivities.filter((a) => a.type === "review");
+  const activities = activitiesDb?.activities;
 
-  const formatTimestamp = (timestamp: Date) => {
-    const date = timestamp;
+  const formatTimestamp = (timestamp: Date | string | null) => {
+    const date = timestamp ? new Date(timestamp) : new Date();
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
@@ -114,7 +87,7 @@ export function FeedTab({ agentId }: FeedTabProps) {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                {answers.length === 0 ? (
+                {activities?.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-12 text-center backdrop-blur">
                     <p className="text-white/60">No answers yet</p>
                     <p className="text-white/40 text-xs">
@@ -122,10 +95,10 @@ export function FeedTab({ agentId }: FeedTabProps) {
                     </p>
                   </div>
                 ) : (
-                  answers.map((activity) => (
+                  activities?.map((activity) => (
                     <ActivityCard
                       activity={activity}
-                      agentId={agentId}
+                      agentFid={agentId}
                       approveActivity={approveActivity}
                       formatTimestamp={formatTimestamp}
                       key={activity.id}
@@ -145,28 +118,29 @@ export function FeedTab({ agentId }: FeedTabProps) {
                 <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
-                {reviews.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-                    <p className="text-muted-foreground">No pending reviews</p>
-                    <p className="text-muted-foreground text-sm">
-                      Messages requiring your approval will appear here
-                    </p>
-                  </div>
-                ) : (
-                  reviews.map((activity) => (
-                    <ActivityCard
-                      activity={activity}
-                      agentId={agentId}
-                      approveActivity={approveActivity}
-                      formatTimestamp={formatTimestamp}
-                      key={activity.id}
-                      rejectActivity={rejectActivity}
-                      showActions
-                    />
-                  ))
-                )}
-              </div>
+              // <div className="flex flex-col gap-4">
+              //   {reviews.length === 0 ? (
+              //     <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+              //       <p className="text-muted-foreground">No pending reviews</p>
+              //       <p className="text-muted-foreground text-sm">
+              //         Messages requiring your approval will appear here
+              //       </p>
+              //     </div>
+              //   ) : (
+              //     reviews.map((activity) => (
+              //       <ActivityCard
+              //         activity={activity}
+              //         agentFid={agentId}
+              //         approveActivity={approveActivity}
+              //         formatTimestamp={formatTimestamp}
+              //         key={activity.id}
+              //         rejectActivity={rejectActivity}
+              //         showActions
+              //       />
+              //     ))
+              //   )}
+              // </div>
+              <>boh</>
             )}
           </TabsContent>
         </div>
@@ -176,9 +150,9 @@ export function FeedTab({ agentId }: FeedTabProps) {
 }
 
 type ActivityCardProps = {
-  activity: Activity;
-  agentId: string;
-  formatTimestamp: (timestamp: Date) => string;
+  activity: AgentCastsWithParentUserMetadata;
+  agentFid: number;
+  formatTimestamp: (timestamp: Date | string | null) => string;
   showActions?: boolean;
   approveActivity: ReturnType<typeof useApproveActivity>;
   rejectActivity: ReturnType<typeof useRejectActivity>;
@@ -186,18 +160,18 @@ type ActivityCardProps = {
 
 function ActivityCard({
   activity,
-  agentId,
+  agentFid,
   formatTimestamp,
   showActions = false,
   approveActivity,
   rejectActivity,
 }: ActivityCardProps) {
   const handleApprove = () => {
-    approveActivity.mutate({ activityId: activity.id, agentId });
+    approveActivity.mutate({ activityId: activity.id, agentFid });
   };
 
   const handleReject = () => {
-    rejectActivity.mutate({ activityId: activity.id, agentId });
+    rejectActivity.mutate({ activityId: activity.id, agentFid });
   };
 
   return (
@@ -205,32 +179,41 @@ function ActivityCard({
       {/* Author Info */}
       <div className="flex items-center gap-3">
         <UserAvatar
-          alt={activity.originalUser.username}
-          avatarUrl={null}
+          alt={
+            activity.parentUserMetadata?.username ||
+            `user-${activity.parentCastAuthorFid}` ||
+            "Unknown"
+          }
+          avatarUrl={activity.parentUserMetadata?.avatarUrl || null}
           size="sm"
         />
         <div className="flex flex-1 flex-col">
           <p className="font-medium text-sm text-white">
-            @{activity.originalUser.username}
+            @
+            {activity.parentUserMetadata?.username ||
+              `user-${activity.parentCastAuthorFid}` ||
+              "unknown"}
           </p>
           <p className="text-white/60 text-xs">
-            FID: {activity.originalUser.fid}
+            FID: {activity.parentCastAuthorFid || "N/A"}
           </p>
         </div>
         <span className="text-white/60 text-xs">
-          {formatTimestamp(activity.timestamp)}
+          {formatTimestamp(activity.createdAt || new Date())}
         </span>
       </div>
 
       {/* Original Message */}
       <div className="rounded-xl bg-white/5 p-3">
-        <p className="text-sm text-white/80">{activity.originalMessage}</p>
+        <p className="text-sm text-white/80">
+          {activity.parentCastText || "No parent message"}
+        </p>
       </div>
 
       {/* Agent Response */}
       <div className="rounded-xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 p-3">
         <p className="font-medium text-purple-300 text-xs">Your Agent</p>
-        <p className="mt-1 text-sm text-white">{activity.agentReply}</p>
+        <p className="mt-1 text-sm text-white">{activity.castText}</p>
       </div>
 
       {/* Action Buttons (for Review) */}
