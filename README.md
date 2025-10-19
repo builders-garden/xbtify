@@ -1,4 +1,4 @@
-# Farcaster Mini App Template 
+# Farcaster Mini App Template
 
 This is a [Next.js](https://nextjs.org) starter kit to boostrap your Farcaster Mini App development.
 
