@@ -61,7 +61,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
     <div className="flex flex-col gap-4 pb-28 text-white">
       {/* Tab Header */}
       <div className="flex flex-col gap-2">
-        <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-4xl text-transparent">
+        <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold font-jersey text-5xl text-transparent">
           My Agent
         </h2>
         <p className="text-purple-200/80 text-sm">
@@ -121,7 +121,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
               {isLoadingBalance ? (
                 <Skeleton className="mt-1 h-9 w-48 bg-purple-500/20" />
               ) : (
-                <p className="mt-1 bg-gradient-to-r from-purple-300 to-purple-400 bg-clip-text font-bold text-3xl text-transparent">
+                <p className="mt-1 bg-gradient-to-r from-purple-300 to-purple-400 bg-clip-text font-bold font-jersey text-4xl text-transparent">
                   ${balance ? formatUSDC(balance.formatted) : "0.00"} USDC
                 </p>
               )}

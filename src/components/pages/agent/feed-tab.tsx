@@ -49,7 +49,7 @@ export function FeedTab({ agentFid: agentId }: FeedTabProps) {
     <div className="flex h-full w-full flex-col gap-4 text-white">
       {/* Tab Header */}
       <div className="flex flex-col gap-2">
-        <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-4xl text-transparent">
+        <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold font-jersey text-5xl text-transparent">
           Feed
         </h2>
         <p className="text-purple-200/80 text-sm">
@@ -86,7 +86,7 @@ export function FeedTab({ agentFid: agentId }: FeedTabProps) {
                 <Skeleton className="h-32 w-full rounded-xl bg-purple-500/20" />
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 pb-24">
                 {activities?.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-12 text-center backdrop-blur">
                     <p className="text-white/60">No answers yet</p>

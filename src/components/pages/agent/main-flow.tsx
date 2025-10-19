@@ -133,7 +133,7 @@ export function MainFlow({ onCreateAgent, onViewExplore }: MainFlowProps) {
           >
             <motion.h1
               animate={{ opacity: 1 }}
-              className="mb-3 bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-3xl text-transparent"
+              className="mb-3 bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold font-jersey text-4xl text-transparent"
               initial={{ opacity: 0 }}
             >
               Your AI twin, online 24/7

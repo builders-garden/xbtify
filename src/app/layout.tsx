@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Gabarito } from "next/font/google";
+import { Gabarito, Jersey_25 } from "next/font/google";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 import { preconnect } from "react-dom";
@@ -9,7 +9,12 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { env } from "@/lib/env";
 
-const gabarito = Gabarito({ subsets: ["latin"] });
+export const gabarito = Gabarito({ subsets: ["latin"] });
+export const jersey25 = Jersey_25({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-jersey",
+});
 
 export const metadata: Metadata = {
   title: `${env.NEXT_PUBLIC_APPLICATION_NAME} by Builders Garden`,
@@ -26,7 +31,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${gabarito.className} size-full antialiased`}>
+      <body
+        className={`${gabarito.className} ${jersey25.variable} size-full antialiased`}
+      >
         <VideoBackground />
         <Providers cookie={cookie}>
           {children}

@@ -195,7 +195,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
             animate={{
               opacity: [1, 0.7, 1],
             }}
-            className="font-medium text-2xl text-white"
+            className="font-jersey font-medium text-3xl text-white"
             transition={{
               duration: 2,
               repeat: Number.POSITIVE_INFINITY,

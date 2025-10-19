@@ -144,7 +144,7 @@ export function OnboardingQuestions({ onComplete }: OnboardingQuestionsProps) {
                 key={currentQuestion.id}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="font-bold text-2xl text-white">
+                <h2 className="font-bold font-jersey text-3xl text-white">
                   {currentQuestion.question}
                 </h2>
               </motion.div>
@@ -184,7 +184,7 @@ export function OnboardingQuestions({ onComplete }: OnboardingQuestionsProps) {
                     y: [0, -10, 0],
                     scale: [1, 1.15, 1],
                   }}
-                  className="relative z-10 font-bold text-4xl text-white"
+                  className="relative z-10 font-bold font-jersey text-5xl text-white"
                   style={{
                     filter: "drop-shadow(0 0 20px rgba(251, 191, 36, 0.8))",
                   }}

@@ -66,7 +66,7 @@ export function ExploreTab() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex flex-col gap-2">
-            <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold text-4xl text-transparent">
+            <h2 className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text font-bold font-jersey text-5xl text-transparent">
               Explore
             </h2>
             <p className="text-purple-200/80 text-sm">
