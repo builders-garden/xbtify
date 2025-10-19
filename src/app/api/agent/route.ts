@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getAgentByFid, updateAgent } from "@/lib/database/queries/agent.query";
+import {
+  getAgentByCreatorFid,
+  updateAgent,
+} from "@/lib/database/queries/agent.query";
 import { createAgentSchema } from "@/lib/schemas/agent.schema";
 import { authenticateApi } from "@/utils/authenticate-api";
 
@@ -32,8 +35,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const agent = await getAgentByFid(1391657);
-    // const agent = await getAgentByFid(authUser.farcasterFid);
+    // const agent = await getAgentByFid(1391657);
+    const agent = await getAgentByCreatorFid(authUser.farcasterFid);
 
     if (!agent) {
       return NextResponse.json(
@@ -98,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     // TODO: Implement createAgent with full onboarding data
     // For now, check if agent already exists
-    const existingAgent = await getAgentByFid(authUser.farcasterFid);
+    const existingAgent = await getAgentByCreatorFid(authUser.farcasterFid);
 
     if (existingAgent) {
       return NextResponse.json(
@@ -178,7 +181,8 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const agent = await getAgentByFid(1391657);
+    // const agent = await getAgentByFid(1391657);
+    const agent = await getAgentByCreatorFid(authUser.farcasterFid);
 
     if (!agent) {
       return NextResponse.json(
@@ -234,7 +238,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const agent = await getAgentByFid(authUser.farcasterFid);
+    const agent = await getAgentByCreatorFid(authUser.farcasterFid);
 
     if (!agent) {
       return NextResponse.json(

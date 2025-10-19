@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAgentsByFid } from "@/lib/database/queries/agent.query";
+import { getAllAgents } from "@/lib/database/queries/agent.query";
 import { fetchBulkUsersFromNeynar } from "@/lib/neynar";
 import type { MarketplaceAgent } from "@/types/agent.type";
 
@@ -11,9 +11,8 @@ import type { MarketplaceAgent } from "@/types/agent.type";
  */
 export async function GET() {
   try {
-    // Fetch agents with specific FID (for testing)
-    const TARGET_FID = 1391657;
-    const agents = await getAgentsByFid(TARGET_FID);
+    // Fetch all agents
+    const agents = await getAllAgents();
 
     // Fetch Neynar data for all agents to get follower counts
     const fids = agents.map((agent) => agent.fid).join(",");
