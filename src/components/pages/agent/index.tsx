@@ -44,7 +44,7 @@ export const AgentPage = () => {
   // Poll agent info when we're in the loading state
   const { data: agentInfo } = useAgentInfo(pollingFid, {
     enabled: flowState === "polling" && pollingFid !== null,
-    refetchInterval: 3000, // Poll every 3 seconds
+    refetchInterval: 5000, // Poll every 5 seconds
   });
 
   // Handle polling completion

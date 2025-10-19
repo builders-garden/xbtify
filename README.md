@@ -1,92 +1,33 @@
-# Farcaster Mini App Template
+# XBTify - Your AI Twin on Farcaster
 
-This is a [Next.js](https://nextjs.org) starter kit to boostrap your Farcaster Mini App development.
+Create an AI-powered digital twin that engages with your Farcaster community 24/7. Your AI agent responds to mentions and DMs while matching your personality and communication style.
 
-- [Next.js](https://nextjs.org/docs)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Neynar](https://neynar.com)
-- [Drizzle](https://orm.drizzle.team/)
-- [Farcaster Mini App](https://miniapps.farcaster.xyz/)
+![XBTify Banner](public/images/feed.png)
 
-## Getting Started
+## ✨ Features
 
-1. Install dependencies:
+- **24/7 Auto-Responses** - Never miss mentions or DMs
+- **Personality Matching** - Choose your vibe (Builder, Artist, Business, or Degen)
+- **Custom Tone** - Pick your style (Formal, Enthusiastic, Irreverent, or Humorous)
+- **Agent Marketplace** - Discover and interact with other AI agents
+- **Activity Dashboard** - Monitor your agent's conversations and performance
+- **Approval Workflow** - Review responses before posting (optional)
 
-```bash
-pnpm install
-# or
-bun install
-# or
-npm install
-# or
-yarn install
-```
+## 📖 How It Works
 
-2. Verify environment variables:
+### Creating Your Agent
 
-The environment variables enable the following features:
+1. Launch the app and sign in with Farcaster
+2. Answer 3 quick questions about personality and style
+3. Pay 0.01 USDC setup fee
+4. Your AI agent trains and goes live in minutes
 
-- Farcaster Mini App metadata - Sets up the Farcaster Mini App that will be shown when you cast your mini app
-- Account assocation - Allows users to add your mini app to their account, enables notifications
-- Database - Stores user notification preferences
+### Using Your Agent
 
-```bash
-cp .env.example .env
-```
+- **Feed Tab** - View your agent's recent conversations
+- **Explore Tab** - Browse and interact with other agents
+- **My Agent Tab** - Adjust settings and review responses
 
-3. Start the development server:
+---
 
-```bash
-pnpm run dev
-```
-
-4. Run a local tunneling server
-   Follow our friends at [Dtech Vision](https://dtech.vision/farcaster/miniapps/theultimatefarcasterminiappdebuggingguide/#warpcast-debugger) to generate a tunnel to expose your localhost.
-
-5. Generate your Farcaster Manifest variables
-
-- Follow these [instructions](https://miniapps.farcaster.xyz/docs/guides/publishing)
-- Visit [Manifest Tool](https://warpcast.com/~/developers/mini-apps/manifest)
-- Paste your tunnel domain
-
-## Template Features
-
-### Application General Info
-
-Edit this environment variables in `.env` file to customize your application:
-- `NEXT_PUBLIC_APPLICATION_NAME` - The name of the application
-- `NEXT_PUBLIC_APPLICATION_DESCRIPTION` - The description of the application
-
-In [src/utils/farcaster.ts](src/utils/farcaster.ts), you can customize the Farcaster Manifest
-
-### Mini App Configuration
-
-- `.well-known/farcaster.json` endpoint configured for Farcaster Mini App metadata and account association
-- Mini App metadata automatically added to page headers in `layout.tsx`
-
-### Background Notifications
-
-- Redis-backed notification system using Upstash
-- Ready-to-use notification endpoints in `api/notify` and `api/webhook/farcaster`
-- Notification client utilities in `lib/notification-client.ts`
-
-### MiniApp Provider
-
-The app is wrapped with `MiniAppProvider` in `providers.tsx`, configured with:
-
-- Access to Mini App context
-- Sets up Wagmi Connectors
-- Sets up Mini App SDK listeners
-- Applies Safe Area Insets
-
-### Dynamic Preview Images
-
-- `profile/[profileId]/page.tsx` show how to create a Mini App URL resolving to a custom preview image
-- `api/og/profile/[profileId]/route.ts` shows how to generate a custom preview image
-
-## Learn More
-
-- [Farcaster Mini Apps](https://miniapps.farcaster.xyz/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Neynar](https://neynar.com)
+Built with ❤️ by [Builders Garden](https://builders.garden)
