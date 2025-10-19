@@ -93,7 +93,7 @@ export function getFarcasterManifest() {
   let miniappName = env.NEXT_PUBLIC_APPLICATION_NAME;
   let noindex = true;
   const appUrl = env.NEXT_PUBLIC_URL;
-  if (appUrl === "https://production-url.com") {
+  if (appUrl === "https://xbtify.me") {
     noindex = false;
   } else if (appUrl === "https://dev.production-url.com") {
     miniappName += " Dev";
@@ -115,20 +115,20 @@ export function getFarcasterManifest() {
       iconUrl: `${appUrl}/images/icon.png`,
       homeUrl: appUrl,
       imageUrl: `${appUrl}/images/feed.png`,
-      buttonTitle: "Open",
+      buttonTitle: "Create your AI twin",
       splashImageUrl: `${appUrl}/images/splash.png`,
-      splashBackgroundColor: "#FFFFFF",
+      splashBackgroundColor: "#000000",
       webhookUrl: `${appUrl}/api/webhook/farcaster`, // our farcaster webhook
       // Metadata https://github.com/farcasterxyz/miniapps/discussions/191
-      subtitle: "Your AI twin on Farcaster", // 30 characters, no emojis or special characters, short description under app name
+      subtitle: "Meet your AI twin on Farcaster", // 30 characters, no emojis or special characters, short description under app name
       description:
-        "Create your AI agent that engages with your Farcaster community 24/7. Customize personality, tone, and communication style to perfectly match your voice.", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
+        "Create your AI agent that engages with your Farcaster community up all day. Customize personality, tone, and communication style to perfectly match your voice", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
       primaryCategory: "social", // https://github.com/farcasterxyz/miniapps/blob/main/packages/miniapp-core/src/schemas/manifest.ts
       tags: ["ai", "agent", "automation", "social", "assistant"], // up to 5 tags, filtering/search tags
       tagline: "Scale yourself with AI", // 30 characters, marketing tagline should be punchy and descriptive
       ogTitle: `${miniappName} - AI Agent`, // 30 characters, app name + short tag, Title case, no emojis
       ogDescription:
-        "Create your AI twin that engages on Farcaster 24/7. Customize personality and communication style.", // 100 characters, summarize core benefits in 1-2 lines
+        "Create your AI twin that engages on Farcaster up all day. Make it yours", // 100 characters, summarize core benefits in 1-2 lines
       screenshotUrls: [
         // 1284 x 2778, visual previews of the app, max 3 screenshots
         `${appUrl}/images/feed.png`,

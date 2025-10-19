@@ -4,9 +4,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/auth-context";
+import { useFarcaster } from "@/contexts/farcaster-context";
 import { useAgent, useUpdateAgent } from "@/hooks/use-agent";
 import { useAgentInfo, useInitAgent } from "@/hooks/use-ai-service";
 import type { Agent } from "@/lib/database/db.schema";
+import { Website } from "../website";
 import { Dashboard } from "./dashboard";
 import { LoadingScreen } from "./loading-screen";
 import { MainFlow } from "./main-flow";
@@ -14,13 +16,25 @@ import { OnboardingQuestions } from "./onboarding-questions";
 
 type FlowState = "main" | "onboarding" | "loading" | "polling";
 
-export function AgentPage() {
+export const AgentPage = () => {
+  console.log("Rendering AgentPage");
+
   const [flowState, setFlowState] = useState<FlowState>("main");
   const { data: agent, isLoading: isLoadingAgent } = useAgent();
   const { user } = useAuth();
   const initAgent = useInitAgent();
   const updateAgent = useUpdateAgent();
   const [pollingFid, setPollingFid] = useState<number | null>(null);
+  const { context, isMiniAppReady } = useFarcaster();
+
+  const isFromBrowser =
+    (!context && isMiniAppReady) || !(context || isMiniAppReady);
+
+  console.log({
+    flowState,
+    pollingFid,
+    isFromBrowser,
+  });
 
   // Poll agent info when we're in the loading state
   const { data: agentInfo } = useAgentInfo(pollingFid, {
@@ -126,6 +140,10 @@ export function AgentPage() {
     );
   }
 
+  if (isFromBrowser) {
+    return <Website />;
+  }
+
   // If user has an agent, show dashboard
   if (agent) {
     return <Dashboard agent={agent} onUpdateAgent={handleUpdateAgent} />;
@@ -147,4 +165,4 @@ export function AgentPage() {
       onViewExplore={handleViewExplore}
     />
   );
-}
+};
