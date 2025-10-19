@@ -17,8 +17,6 @@ import { OnboardingQuestions } from "./onboarding-questions";
 type FlowState = "main" | "onboarding" | "loading" | "polling";
 
 export const AgentPage = () => {
-  console.log("Rendering AgentPage");
-
   const [flowState, setFlowState] = useState<FlowState>("main");
   const { data: agent, isLoading: isLoadingAgent } = useAgent();
   const { user } = useAuth();
@@ -114,6 +112,10 @@ export const AgentPage = () => {
     console.log("View explore");
   };
 
+  if (isFromBrowser) {
+    return <Website />;
+  }
+
   // Show loading state while fetching agent data
   if (isLoadingAgent) {
     return (
@@ -138,10 +140,6 @@ export const AgentPage = () => {
         </p>
       </div>
     );
-  }
-
-  if (isFromBrowser) {
-    return <Website />;
   }
 
   // If user has an agent, show dashboard
