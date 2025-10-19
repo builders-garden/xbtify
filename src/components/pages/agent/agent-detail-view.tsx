@@ -6,12 +6,9 @@ import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import type { MarketplaceAgent } from "@/types/agent.type";
 import {
-  CommonPhrases,
-  CommunicationStyle,
-  Jargon,
   PersonalityTraits,
   parseStyleProfile,
-  Topics,
+  StyleProfileAccordion,
 } from "./shared-agent-components";
 
 type AgentDetailViewProps = {
@@ -100,28 +97,8 @@ export function AgentDetailView({ agent, onBack }: AgentDetailViewProps) {
         tone={agent.tone}
       />
 
-      {/* Style Profile - Common Phrases */}
-      {styleProfile?.vocabulary?.common_phrases && (
-        <CommonPhrases
-          delay={0.3}
-          phrases={styleProfile.vocabulary.common_phrases}
-        />
-      )}
-
-      {/* Style Profile - Jargon */}
-      {styleProfile?.vocabulary?.jargon && (
-        <Jargon delay={0.4} jargon={styleProfile.vocabulary.jargon} />
-      )}
-
-      {/* Style Profile - Keywords/Topics */}
-      {styleProfile?.keywords && (
-        <Topics delay={0.5} keywords={styleProfile.keywords} />
-      )}
-
-      {/* Style Profile - Tone Description */}
-      {styleProfile?.tone && (
-        <CommunicationStyle delay={0.6} style={styleProfile.tone} />
-      )}
+      {/* Style Profile - Accordion */}
+      {styleProfile && <StyleProfileAccordion styleProfile={styleProfile} />}
 
       {/* Floating Chat Button */}
       <motion.button

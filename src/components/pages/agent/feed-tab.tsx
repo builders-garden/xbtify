@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   useAgentActivities,
@@ -62,7 +62,7 @@ export function FeedTab({ agentFid: agentId }: FeedTabProps) {
         onValueChange={setActiveSubTab}
         value={activeSubTab}
       >
-        <TabsList className="grid w-full grid-cols-2 rounded-2xl border border-white/10 bg-white/5 backdrop-blur">
+        {/* <TabsList className="grid w-full grid-cols-2 rounded-2xl border border-white/10 bg-white/5 backdrop-blur">
           <TabsTrigger
             className="rounded-xl text-white/60 transition hover:cursor-pointer data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
             value="answers"
@@ -75,7 +75,7 @@ export function FeedTab({ agentFid: agentId }: FeedTabProps) {
           >
             Review
           </TabsTrigger>
-        </TabsList>
+        </TabsList> */}
 
         <div className="flex-1 overflow-y-auto">
           <TabsContent className="m-0" value="answers">

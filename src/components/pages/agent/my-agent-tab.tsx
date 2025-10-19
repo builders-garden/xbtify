@@ -17,13 +17,10 @@ import { useUsdcBalance } from "@/hooks/use-usdc-balance";
 import type { Agent } from "@/lib/database/db.schema";
 import {
   CHARACTER_OPTIONS,
-  CommonPhrases,
-  CommunicationStyle,
-  Jargon,
   PERSONALITY_OPTIONS,
   parseStyleProfile,
+  StyleProfileAccordion,
   TONE_OPTIONS,
-  Topics,
 } from "./shared-agent-components";
 
 type MyAgentTabProps = {
@@ -222,28 +219,8 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
         </div>
       </motion.div>
 
-      {/* Style Profile - Common Phrases */}
-      {styleProfile?.vocabulary?.common_phrases && (
-        <CommonPhrases
-          delay={0.3}
-          phrases={styleProfile.vocabulary.common_phrases}
-        />
-      )}
-
-      {/* Style Profile - Jargon */}
-      {styleProfile?.vocabulary?.jargon && (
-        <Jargon delay={0.4} jargon={styleProfile.vocabulary.jargon} />
-      )}
-
-      {/* Style Profile - Keywords/Topics */}
-      {styleProfile?.keywords && (
-        <Topics delay={0.5} keywords={styleProfile.keywords} />
-      )}
-
-      {/* Style Profile - Tone Description */}
-      {styleProfile?.tone && (
-        <CommunicationStyle delay={0.6} style={styleProfile.tone} />
-      )}
+      {/* Style Profile - Accordion */}
+      {styleProfile && <StyleProfileAccordion styleProfile={styleProfile} />}
     </div>
   );
 }
