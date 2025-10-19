@@ -12,9 +12,14 @@ import { MyAgentTab } from "./my-agent-tab";
 type DashboardProps = {
   agent: Agent;
   onUpdateAgent: (agent: Partial<Agent>) => void;
+  creatorUsername?: string;
 };
 
-export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
+export function Dashboard({
+  agent,
+  onUpdateAgent,
+  creatorUsername,
+}: DashboardProps) {
   const [activeTab, setActiveTab] = useState("feed");
 
   return (
@@ -68,7 +73,11 @@ export function Dashboard({ agent, onUpdateAgent }: DashboardProps) {
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
                   <TabsContent className="m-0 h-full" value="my-agent">
-                    <MyAgentTab agent={agent} onUpdateAgent={onUpdateAgent} />
+                    <MyAgentTab
+                      agent={agent}
+                      creatorUsername={creatorUsername}
+                      onUpdateAgent={onUpdateAgent}
+                    />
                   </TabsContent>
                 </motion.div>
               )}
