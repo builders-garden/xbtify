@@ -4,7 +4,6 @@ import { Pencil, Share2 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
-import type { Address } from "viem";
 import {
   Select,
   SelectContent,
@@ -12,9 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { useUsdcBalance } from "@/hooks/use-usdc-balance";
 import type { Agent } from "@/lib/database/db.schema";
 import { shareAgent } from "@/lib/share";
 import { EditAgentProfileDialog } from "./edit-agent-profile-dialog";
@@ -40,10 +37,10 @@ export function MyAgentTab({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Fetch USDC balance
-  const { balance, isLoading: isLoadingBalance } = useUsdcBalance({
-    address: agent.address as Address | undefined,
-    enabled: !!agent.address,
-  });
+  // const { balance, isLoading: isLoadingBalance } = useUsdcBalance({
+  //   address: agent.address as Address | undefined,
+  //   enabled: !!agent.address,
+  // });
 
   const styleProfile = parseStyleProfile(agent.styleProfilePrompt);
 
@@ -72,13 +69,13 @@ export function MyAgentTab({
     onUpdateAgent({ movieCharacter: value || undefined });
   };
 
-  const formatUSDC = (value: string) => {
-    const num = Number.parseFloat(value);
-    return new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(num);
-  };
+  // const formatUSDC = (value: string) => {
+  //   const num = Number.parseFloat(value);
+  //   return new Intl.NumberFormat("en-US", {
+  //     minimumFractionDigits: 2,
+  //     maximumFractionDigits: 2,
+  //   }).format(num);
+  // };
 
   return (
     <div className="flex flex-col gap-4 pb-28 text-white">
@@ -157,13 +154,23 @@ export function MyAgentTab({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-200/60 text-sm">Agent Balance</p>
-              {isLoadingBalance ? (
+              {/* {isLoadingBalance ? (
                 <Skeleton className="mt-1 h-9 w-48 bg-purple-500/20" />
-              ) : (
-                <p className="mt-1 bg-gradient-to-r from-purple-300 to-purple-400 bg-clip-text font-bold font-jersey text-4xl text-transparent">
-                  ${balance ? formatUSDC(balance.formatted) : "0.00"} USDC
+              ) : ( */}
+              <div className="flex items-center gap-2">
+                <p className="bg-gradient-to-r from-purple-300 to-purple-400 bg-clip-text font-bold font-jersey text-4xl text-transparent">
+                  {/* ${balance ? formatUSDC(balance.formatted) : "0.00"} USDC */}
+                  10 USDC
                 </p>
-              )}
+                <Image
+                  alt="USDC"
+                  className="h-6 w-6"
+                  height={32}
+                  src="/images/usdc.png"
+                  width={32}
+                />
+              </div>
+              {/* )} */}
             </div>
             <div className="relative right-4 h-14 w-14 scale-[4] hue-rotate-[42deg]">
               <Image
