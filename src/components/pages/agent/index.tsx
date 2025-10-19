@@ -144,7 +144,13 @@ export const AgentPage = () => {
 
   // If user has an agent, show dashboard
   if (agent) {
-    return <Dashboard agent={agent} onUpdateAgent={handleUpdateAgent} />;
+    return (
+      <Dashboard
+        agent={agent}
+        creatorUsername={user?.farcasterUsername || undefined}
+        onUpdateAgent={handleUpdateAgent}
+      />
+    );
   }
 
   // Flow states for agent creation

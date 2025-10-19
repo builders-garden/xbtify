@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { useUsdcBalance } from "@/hooks/use-usdc-balance";
 import type { Agent } from "@/lib/database/db.schema";
+import { shareAgent } from "@/lib/share";
 import { EditAgentProfileDialog } from "./edit-agent-profile-dialog";
 import {
   CHARACTER_OPTIONS,
@@ -28,9 +29,14 @@ import {
 type MyAgentTabProps = {
   agent: Agent;
   onUpdateAgent: (agent: Partial<Agent>) => void;
+  creatorUsername?: string;
 };
 
-export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
+export function MyAgentTab({
+  agent,
+  onUpdateAgent,
+  creatorUsername,
+}: MyAgentTabProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Fetch USDC balance
@@ -40,6 +46,14 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
   });
 
   const styleProfile = parseStyleProfile(agent.styleProfilePrompt);
+
+  const handleShare = async () => {
+    if (!agent.username) {
+      console.error("Agent username is required to share");
+      return;
+    }
+    await shareAgent(agent.id, agent.username, creatorUsername);
+  };
 
   // Normalize values to lowercase for case-insensitive comparison
   const normalizedPersonality = agent.personality?.toLowerCase() || "";
@@ -107,9 +121,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
               </motion.button>
               <motion.button
                 className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
-                onClick={() => {
-                  // TODO: Implement share functionality
-                }}
+                onClick={handleShare}
                 type="button"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}

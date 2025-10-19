@@ -4,6 +4,7 @@ import { ArrowLeft, MessageCircle, Share2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { shareAgent } from "@/lib/share";
 import type { MarketplaceAgent } from "@/types/agent.type";
 import {
   PersonalityTraits,
@@ -14,25 +15,40 @@ import {
 type AgentDetailViewProps = {
   agent: MarketplaceAgent;
   onBack: () => void;
+  creatorUsername?: string;
+  label?: string;
 };
 
-export function AgentDetailView({ agent, onBack }: AgentDetailViewProps) {
+export function AgentDetailView({
+  agent,
+  onBack,
+  creatorUsername,
+  label,
+}: AgentDetailViewProps) {
   const styleProfile = parseStyleProfile(agent.styleProfilePrompt);
+
+  const handleShare = async () => {
+    if (!agent.username) {
+      console.error("Agent username is required to share");
+      return;
+    }
+    await shareAgent(agent.id, agent.username, creatorUsername);
+  };
 
   return (
     <div className="flex flex-col gap-4 pb-28 text-white">
       {/* Back Button */}
       <Button
-        className="w-fit cursor-pointer gap-2 border-purple-400/30 bg-purple-500/10 text-white hover:bg-purple-500/20 hover:text-white"
+        className="z-50 w-fit cursor-pointer gap-2 border-purple-400/30 bg-purple-500/10 text-white hover:bg-purple-500/20 hover:text-white"
         onClick={onBack}
         variant="outline"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Explore
+        {label || "Explore"}
       </Button>
 
       {/* Tab Header */}
-      <p className="text-purple-200/80 text-sm">
+      <p className="z-50 text-purple-200/80 text-sm">
         View agent details and personality
       </p>
 
@@ -55,9 +71,7 @@ export function AgentDetailView({ agent, onBack }: AgentDetailViewProps) {
             </h2>
             <motion.button
               className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
-              onClick={() => {
-                // TODO: Implement share functionality
-              }}
+              onClick={handleShare}
               type="button"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
