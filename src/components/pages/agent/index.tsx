@@ -73,7 +73,9 @@ export function AgentPage() {
           width={360}
         />
 
-        <p className="font-semibold text-lg text-white">LOADING...</p>
+        <p className="font-jersey font-semibold text-lg text-white">
+          LOADING...
+        </p>
       </div>
     );
   }

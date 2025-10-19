@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getAgentByFid, updateAgent } from "@/lib/database/queries/agent.query";
+import { updateUserProfile } from "@/lib/neynar";
 import { createAgentSchema } from "@/lib/schemas/agent.schema";
 import { authenticateApi } from "@/utils/authenticate-api";
 
@@ -155,6 +156,10 @@ export async function PATCH(request: NextRequest) {
       "styleProfilePrompt",
       "topicPatternsPrompt",
       "keywords",
+      "bio",
+      "avatarUrl",
+      "displayName",
+      "username",
     ];
 
     const updates: Partial<typeof body> = {};
@@ -185,6 +190,38 @@ export async function PATCH(request: NextRequest) {
         { status: "nok", error: "Agent not found" },
         { status: 404 }
       );
+    }
+
+    // Check if we need to update Neynar profile
+    const neynarUpdates: {
+      bio?: string;
+      pfp_url?: string;
+      username?: string;
+      display_name?: string;
+    } = {};
+
+    if ("bio" in updates && updates.bio !== undefined) {
+      neynarUpdates.bio = updates.bio;
+    }
+    if ("avatarUrl" in updates && updates.avatarUrl !== undefined) {
+      neynarUpdates.pfp_url = updates.avatarUrl;
+    }
+    if ("username" in updates && updates.username !== undefined) {
+      neynarUpdates.username = updates.username;
+    }
+    if ("displayName" in updates && updates.displayName !== undefined) {
+      neynarUpdates.display_name = updates.displayName;
+    }
+
+    // Update Neynar profile if there are relevant changes and signerUuid exists
+    if (Object.keys(neynarUpdates).length > 0 && agent.signerUuid) {
+      try {
+        await updateUserProfile(agent.signerUuid, neynarUpdates);
+      } catch (neynarError) {
+        console.error("Error updating Neynar profile:", neynarError);
+        // Continue with database update even if Neynar update fails
+        // You might want to return a warning to the user
+      }
     }
 
     // Update the agent in the database

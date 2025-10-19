@@ -1,8 +1,9 @@
 "use client";
 
-import { Share2 } from "lucide-react";
+import { Pencil, Share2 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
+import { useState } from "react";
 import type { Address } from "viem";
 import {
   Select,
@@ -15,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { useUsdcBalance } from "@/hooks/use-usdc-balance";
 import type { Agent } from "@/lib/database/db.schema";
+import { EditAgentProfileDialog } from "./edit-agent-profile-dialog";
 import {
   CHARACTER_OPTIONS,
   PERSONALITY_OPTIONS,
@@ -29,6 +31,8 @@ type MyAgentTabProps = {
 };
 
 export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   // Fetch USDC balance
   const { balance, isLoading: isLoadingBalance } = useUsdcBalance({
     address: agent.address as Address | undefined,
@@ -86,17 +90,28 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
             <h2 className="font-bold text-white text-xl">
               {agent.displayName || agent.username}
             </h2>
-            <motion.button
-              className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
-              onClick={() => {
-                // TODO: Implement share functionality
-              }}
-              type="button"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Share2 className="h-5 w-5" />
-            </motion.button>
+            <div className="flex items-center gap-1">
+              <motion.button
+                className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
+                onClick={() => setIsEditDialogOpen(true)}
+                type="button"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Pencil className="h-5 w-5" />
+              </motion.button>
+              <motion.button
+                className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
+                onClick={() => {
+                  // TODO: Implement share functionality
+                }}
+                type="button"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Share2 className="h-5 w-5" />
+              </motion.button>
+            </div>
           </div>
           <p className="text-purple-200/60 text-sm">@{agent.username}</p>
           {agent.address && (
@@ -106,6 +121,13 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
           )}
         </div>
       </motion.div>
+
+      {/* Edit Profile Dialog */}
+      <EditAgentProfileDialog
+        agent={agent}
+        onOpenChange={setIsEditDialogOpen}
+        open={isEditDialogOpen}
+      />
 
       {/* USDC Balance */}
       {agent.address && (

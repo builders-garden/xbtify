@@ -101,3 +101,46 @@ export const fetchUserByAddress = async (
   const userArray = data[address.toLowerCase()];
   return userArray && userArray.length > 0 ? userArray[0] : undefined;
 };
+
+/**
+ * Update user profile on Neynar
+ * @param signerUuid - The UUID of the signer (paired with API key)
+ * @param updates - The profile fields to update
+ * @returns Success status and message
+ */
+export const updateUserProfile = async (
+  signerUuid: string,
+  updates: {
+    bio?: string;
+    pfp_url?: string;
+    username?: string;
+    display_name?: string;
+    url?: string;
+  }
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await ky.patch(
+      "https://api.neynar.com/v2/farcaster/user/",
+      {
+        headers: {
+          "x-api-key": env.NEYNAR_API_KEY,
+          "Content-Type": "application/json",
+        },
+        json: {
+          signer_uuid: signerUuid,
+          ...updates,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to update user profile: ${response.statusText}`);
+    }
+
+    const data = await response.json<{ success: boolean; message: string }>();
+    return data;
+  } catch (error) {
+    console.error("Error updating user profile on Neynar:", error);
+    throw error;
+  }
+};
