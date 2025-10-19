@@ -8,6 +8,8 @@ export const env = createEnv({
     JWT_SECRET: z.string().min(1),
     NOTIFICATION_SECRET: z.string().min(1),
     DATABASE_URL: z.string().min(1),
+    AI_SERVICE_URL: z.string().url().min(1),
+    AI_SERVICE_API_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_ENV: z

@@ -74,6 +74,18 @@ export async function getAgentsByFid(fid: number): Promise<Agent[]> {
 }
 
 /**
+ * Get all agents
+ * @returns Array of agents
+ */
+export async function getAllAgents(): Promise<Agent[]> {
+  const agents = await db.query.agentTable.findMany({
+    orderBy: (table, { desc }) => [desc(table.createdAt)],
+  });
+
+  return agents;
+}
+
+/**
  * Create a new agent
  * @param agent - The agent data to insert
  * @returns The created agent

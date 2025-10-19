@@ -1,22 +1,47 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useAgent, useCreateAgent, useUpdateAgent } from "@/hooks/use-agent";
+import { useAuth } from "@/contexts/auth-context";
+import { useAgent, useUpdateAgent } from "@/hooks/use-agent";
+import { useAgentInfo, useInitAgent } from "@/hooks/use-ai-service";
 import type { Agent } from "@/lib/database/db.schema";
 import { Dashboard } from "./dashboard";
 import { LoadingScreen } from "./loading-screen";
 import { MainFlow } from "./main-flow";
 import { OnboardingQuestions } from "./onboarding-questions";
 
-type FlowState = "main" | "onboarding" | "loading";
+type FlowState = "main" | "onboarding" | "loading" | "polling";
 
 export function AgentPage() {
   const [flowState, setFlowState] = useState<FlowState>("main");
   const { data: agent, isLoading: isLoadingAgent } = useAgent();
-  const createAgent = useCreateAgent();
+  const { user } = useAuth();
+  const initAgent = useInitAgent();
   const updateAgent = useUpdateAgent();
+  const [pollingFid, setPollingFid] = useState<number | null>(null);
+
+  // Poll agent info when we're in the loading state
+  const { data: agentInfo } = useAgentInfo(pollingFid, {
+    enabled: flowState === "polling" && pollingFid !== null,
+    refetchInterval: 3000, // Poll every 3 seconds
+  });
+
+  // Handle polling completion
+  useEffect(() => {
+    if (flowState === "polling" && agentInfo?.data) {
+      if (agentInfo.data.status === "ready") {
+        toast.success("Agent created successfully!");
+        // Refresh the agent data
+        window.location.reload();
+      } else if (agentInfo.data.status === "error") {
+        toast.error("Failed to create agent. Please try again.");
+        setFlowState("main");
+        setPollingFid(null);
+      }
+    }
+  }, [agentInfo, flowState]);
 
   const handleStartOnboarding = () => {
     setFlowState("onboarding");
@@ -25,16 +50,37 @@ export function AgentPage() {
   const handleOnboardingComplete = async (answers: Record<string, string>) => {
     setFlowState("loading");
 
-    // Here you would normally send the answers to your API
-    // For now, we'll just mock the creation process
     try {
-      // TODO: Include onboarding answers in the agent creation
-      console.log("Creating agent with answers:", answers);
-      await createAgent.mutateAsync({});
-      toast.success("Agent created successfully!");
+      // Map the answers to the expected format
+      const { personality, tone, character } = answers;
+
+      if (!personality) {
+        throw new Error("Missing personality answer");
+      }
+      if (!tone) {
+        throw new Error("Missing tone answer");
+      }
+      if (!character) {
+        throw new Error("Missing character answer");
+      }
+
+      // Call the init endpoint
+      await initAgent.mutateAsync({
+        personality,
+        tone,
+        movieCharacter: character,
+      });
+
+      // Start polling for status
+      setPollingFid(user?.farcasterFid || null);
+      setFlowState("polling");
     } catch (error) {
       console.error("Error creating agent:", error);
-      toast.error("Failed to create agent. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to create agent. Please try again."
+      );
       setFlowState("main");
     }
   };
@@ -86,7 +132,7 @@ export function AgentPage() {
   }
 
   // Flow states for agent creation
-  if (flowState === "loading") {
+  if (flowState === "loading" || flowState === "polling") {
     return <LoadingScreen />;
   }
 

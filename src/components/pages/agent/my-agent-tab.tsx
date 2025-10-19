@@ -41,6 +41,11 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
 
   const styleProfile = parseStyleProfile(agent.styleProfilePrompt);
 
+  // Normalize values to lowercase for case-insensitive comparison
+  const normalizedPersonality = agent.personality?.toLowerCase() || "";
+  const normalizedTone = agent.tone?.toLowerCase() || "";
+  const normalizedMovieCharacter = agent.movieCharacter?.toLowerCase() || "";
+
   const handlePersonalityChange = (value: string) => {
     onUpdateAgent({ personality: value || undefined });
   };
@@ -179,7 +184,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
             </p>
             <Select
               onValueChange={handlePersonalityChange}
-              value={agent.personality || ""}
+              value={normalizedPersonality}
             >
               <SelectTrigger className="w-full border-purple-400/30 bg-purple-500/10 text-white focus:ring-purple-500/60">
                 <SelectValue placeholder="Select personality..." />
@@ -199,7 +204,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
           {/* Tone */}
           <div>
             <p className="mb-1.5 block text-purple-200/80 text-sm">Tone</p>
-            <Select onValueChange={handleToneChange} value={agent.tone || ""}>
+            <Select onValueChange={handleToneChange} value={normalizedTone}>
               <SelectTrigger className="w-full border-purple-400/30 bg-purple-500/10 text-white focus:ring-purple-500/60">
                 <SelectValue placeholder="Select tone..." />
               </SelectTrigger>
@@ -222,7 +227,7 @@ export function MyAgentTab({ agent, onUpdateAgent }: MyAgentTabProps) {
             </p>
             <Select
               onValueChange={handleMovieCharacterChange}
-              value={agent.movieCharacter || ""}
+              value={normalizedMovieCharacter}
             >
               <SelectTrigger className="w-full border-purple-400/30 bg-purple-500/10 text-white focus:ring-purple-500/60">
                 <SelectValue placeholder="Select character..." />
