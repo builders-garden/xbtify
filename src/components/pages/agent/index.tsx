@@ -7,14 +7,16 @@ import { useAuth } from "@/contexts/auth-context";
 import { useFarcaster } from "@/contexts/farcaster-context";
 import { useAgent, useUpdateAgent } from "@/hooks/use-agent";
 import { useAgentInfo, useInitAgent } from "@/hooks/use-ai-service";
+import { useUpdateUserPayment } from "@/hooks/use-auth-hooks";
 import type { Agent } from "@/lib/database/db.schema";
 import { Website } from "../website";
 import { Dashboard } from "./dashboard";
 import { LoadingScreen } from "./loading-screen";
 import { MainFlow } from "./main-flow";
 import { OnboardingQuestions } from "./onboarding-questions";
+import { PaymentStep } from "./payment-step";
 
-type FlowState = "main" | "onboarding" | "loading" | "polling";
+type FlowState = "main" | "onboarding" | "payment" | "loading" | "polling";
 
 export const AgentPage = () => {
   const [flowState, setFlowState] = useState<FlowState>("main");
@@ -22,7 +24,12 @@ export const AgentPage = () => {
   const { user } = useAuth();
   const initAgent = useInitAgent();
   const updateAgent = useUpdateAgent();
+  const updateUserPayment = useUpdateUserPayment();
   const [pollingFid, setPollingFid] = useState<number | null>(null);
+  const [onboardingAnswers, setOnboardingAnswers] = useState<Record<
+    string,
+    string
+  > | null>(null);
   const { context, isMiniAppReady } = useFarcaster();
 
   const isFromBrowser =
@@ -59,12 +66,31 @@ export const AgentPage = () => {
     setFlowState("onboarding");
   };
 
-  const handleOnboardingComplete = async (answers: Record<string, string>) => {
+  const handleOnboardingComplete = (answers: Record<string, string>) => {
+    // Store answers and move to payment step
+    setOnboardingAnswers(answers);
+    setFlowState("payment");
+  };
+
+  const handlePaymentSuccess = async (txHash: string) => {
     setFlowState("loading");
 
     try {
+      // Update user payment hash
+      const paymentResult = await updateUserPayment.mutateAsync({
+        paidTxHash: txHash,
+      });
+
+      if (!paymentResult || paymentResult.status !== "ok") {
+        throw new Error("Failed to save payment transaction");
+      }
+
+      if (!onboardingAnswers) {
+        throw new Error("Missing onboarding answers");
+      }
+
       // Map the answers to the expected format
-      const { personality, tone, character } = answers;
+      const { personality, tone, character } = onboardingAnswers;
 
       if (!personality) {
         throw new Error("Missing personality answer");
@@ -93,7 +119,7 @@ export const AgentPage = () => {
           ? error.message
           : "Failed to create agent. Please try again."
       );
-      setFlowState("main");
+      setFlowState("payment"); // Go back to payment step instead of main
     }
   };
 
@@ -105,6 +131,10 @@ export const AgentPage = () => {
       console.error("Error updating agent:", error);
       toast.error("Failed to update agent. Please try again.");
     }
+  };
+
+  const handleBackToOnboarding = () => {
+    setFlowState("onboarding");
   };
 
   const handleViewExplore = () => {
@@ -160,6 +190,15 @@ export const AgentPage = () => {
 
   if (flowState === "onboarding") {
     return <OnboardingQuestions onComplete={handleOnboardingComplete} />;
+  }
+
+  if (flowState === "payment") {
+    return (
+      <PaymentStep
+        onBack={handleBackToOnboarding}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
+    );
   }
 
   // Default: show main flow

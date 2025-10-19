@@ -58,8 +58,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Fetch the agent
-    const agent = await getAgentByFid(1391657);
-    // const agent = await getAgentByFid(authUser.farcasterFid);
+    const agent = await getAgentByFid(authUser.farcasterFid);
 
     if (!agent) {
       return NextResponse.json(

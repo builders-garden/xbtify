@@ -80,3 +80,22 @@ export function useLogout(
     ...options,
   });
 }
+
+export function useUpdateUserPayment(
+  options?: Partial<
+    UseApiMutationOptions<
+      { status: "ok" | "nok"; message?: string; error?: string },
+      { paidTxHash: string }
+    >
+  >
+) {
+  return useApiMutation<
+    { status: "ok" | "nok"; message?: string; error?: string },
+    { paidTxHash: string }
+  >({
+    url: "/api/user/payment",
+    method: "PATCH",
+    body: (variables) => variables,
+    ...options,
+  });
+}
