@@ -16,7 +16,7 @@ export function generateMetadata(): Metadata {
         type: "launch_miniapp",
         name: appName,
         url: appUrl,
-        splashImageUrl: `${appUrl}/images/splash.png`,
+        splashImageUrl: `${appUrl}/images/icon.png`,
         splashBackgroundColor: "#ffffff",
       },
     },

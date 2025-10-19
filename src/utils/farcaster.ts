@@ -116,7 +116,7 @@ export function getFarcasterManifest() {
       homeUrl: appUrl,
       imageUrl: `${appUrl}/images/feed.png`,
       buttonTitle: "Create your AI twin",
-      splashImageUrl: `${appUrl}/images/splash.png`,
+      splashImageUrl: `${appUrl}/images/icon.png`,
       splashBackgroundColor: "#000000",
       webhookUrl: `${appUrl}/api/webhook/farcaster`, // our farcaster webhook
       // Metadata https://github.com/farcasterxyz/miniapps/discussions/191

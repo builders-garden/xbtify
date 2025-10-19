@@ -42,7 +42,7 @@ export async function generateMetadata({
         url: `${appUrl}/profile/${profileId}${
           searchParamsString ? `?${searchParamsString}` : ""
         }`,
-        splashImageUrl: `${appUrl}/images/splash.png`,
+        splashImageUrl: `${appUrl}/images/icon.png`,
         splashBackgroundColor: "#ffffff",
       },
     },
