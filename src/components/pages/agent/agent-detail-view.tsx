@@ -1,5 +1,6 @@
 "use client";
 
+import { sdk } from "@farcaster/miniapp-sdk";
 import { ArrowLeft, MessageCircle, Share2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
@@ -115,22 +116,29 @@ export function AgentDetailView({
       {styleProfile && <StyleProfileAccordion styleProfile={styleProfile} />}
 
       {/* Floating Chat Button */}
-      <motion.button
-        animate={{ opacity: 1 }}
-        className="fixed right-4 bottom-28 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-indigo-500"
-        initial={{ opacity: 0 }}
-        onClick={() => {
-          // TODO: Implement chat functionality / open chat link
-        }}
-        transition={{ opacity: { duration: 0.2, delay: 0.3 } }}
-        type="button"
-        whileHover={{
-          scale: 1.05,
-        }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <MessageCircle className="h-6 w-6 text-white" />
-      </motion.button>
+      {agent.address && (
+        <motion.button
+          animate={{ opacity: 1 }}
+          className="fixed right-4 bottom-28 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 shadow-lg"
+          initial={{ opacity: 0 }}
+          onClick={async () => {
+            try {
+              const chatUrl = `cbwallet://messaging/${agent.address}`;
+              await sdk.actions.openUrl(chatUrl);
+            } catch (error) {
+              console.error("Failed to open chat:", error);
+            }
+          }}
+          transition={{ opacity: { duration: 0.2, delay: 0.3 } }}
+          type="button"
+          whileHover={{
+            scale: 1.05,
+          }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <MessageCircle className="h-6 w-6 text-white" />
+        </motion.button>
+      )}
     </div>
   );
 }
