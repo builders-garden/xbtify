@@ -143,11 +143,38 @@ export function PersonalityTraits({
 type CommonPhrasesProps = {
   phrases: string[];
   delay?: number;
+  standalone?: boolean;
 };
 
-export function CommonPhrases({ phrases, delay = 0.3 }: CommonPhrasesProps) {
+export function CommonPhrases({
+  phrases,
+  delay = 0.3,
+  standalone = true,
+}: CommonPhrasesProps) {
   if (!phrases || phrases.length === 0) {
     return null;
+  }
+
+  const content = (
+    <>
+      <h4 className="mb-2 font-semibold text-purple-300 text-sm">
+        Common Phrases
+      </h4>
+      <div className="flex flex-wrap gap-2">
+        {phrases.map((phrase) => (
+          <span
+            className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-xs"
+            key={phrase}
+          >
+            "{phrase}"
+          </span>
+        ))}
+      </div>
+    </>
+  );
+
+  if (!standalone) {
+    return <div>{content}</div>;
   }
 
   return (
@@ -159,7 +186,7 @@ export function CommonPhrases({ phrases, delay = 0.3 }: CommonPhrasesProps) {
     >
       <h3 className="mb-3 font-bold text-lg text-white">Common Phrases 💬</h3>
       <div className="flex flex-wrap gap-2">
-        {phrases.slice(0, 8).map((phrase) => (
+        {phrases.map((phrase) => (
           <span
             className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-sm"
             key={phrase}
@@ -176,11 +203,38 @@ export function CommonPhrases({ phrases, delay = 0.3 }: CommonPhrasesProps) {
 type JargonProps = {
   jargon: string[];
   delay?: number;
+  standalone?: boolean;
 };
 
-export function Jargon({ jargon, delay = 0.4 }: JargonProps) {
+export function Jargon({
+  jargon,
+  delay = 0.4,
+  standalone = true,
+}: JargonProps) {
   if (!jargon || jargon.length === 0) {
     return null;
+  }
+
+  const content = (
+    <>
+      <h4 className="mb-2 font-semibold text-purple-300 text-sm">
+        Jargon & Slang
+      </h4>
+      <div className="flex flex-wrap gap-2">
+        {jargon.map((word) => (
+          <span
+            className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-xs"
+            key={word}
+          >
+            {word}
+          </span>
+        ))}
+      </div>
+    </>
+  );
+
+  if (!standalone) {
+    return <div>{content}</div>;
   }
 
   return (
@@ -194,7 +248,7 @@ export function Jargon({ jargon, delay = 0.4 }: JargonProps) {
         Vocabulary & Jargon 🗣️
       </h3>
       <div className="flex flex-wrap gap-2">
-        {jargon.slice(0, 15).map((word) => (
+        {jargon.map((word) => (
           <span
             className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-sm"
             key={word}
@@ -211,11 +265,36 @@ export function Jargon({ jargon, delay = 0.4 }: JargonProps) {
 type TopicsProps = {
   keywords: Record<string, string>;
   delay?: number;
+  standalone?: boolean;
 };
 
-export function Topics({ keywords, delay = 0.5 }: TopicsProps) {
+export function Topics({
+  keywords,
+  delay = 0.5,
+  standalone = true,
+}: TopicsProps) {
   if (!keywords || Object.keys(keywords).length === 0) {
     return null;
+  }
+
+  const content = (
+    <div className="space-y-2">
+      {Object.entries(keywords).map(([key, description]) => (
+        <div
+          className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
+          key={key}
+        >
+          <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
+            {key.replace(/_/g, " ")}
+          </h4>
+          <p className="text-purple-200/70 text-xs">{description}</p>
+        </div>
+      ))}
+    </div>
+  );
+
+  if (!standalone) {
+    return content;
   }
 
   return (
@@ -228,21 +307,7 @@ export function Topics({ keywords, delay = 0.5 }: TopicsProps) {
       <h3 className="mb-3 font-bold text-lg text-white">
         Topics & Expertise 🎯
       </h3>
-      <div className="space-y-2">
-        {Object.entries(keywords)
-          .slice(0, 5)
-          .map(([key, description]) => (
-            <div
-              className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
-              key={key}
-            >
-              <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
-                {key.replace(/_/g, " ")}
-              </h4>
-              <p className="text-purple-200/70 text-xs">{description}</p>
-            </div>
-          ))}
-      </div>
+      {content}
     </motion.div>
   );
 }
@@ -251,14 +316,24 @@ export function Topics({ keywords, delay = 0.5 }: TopicsProps) {
 type CommunicationStyleProps = {
   style: string;
   delay?: number;
+  standalone?: boolean;
 };
 
 export function CommunicationStyle({
   style,
   delay = 0.6,
+  standalone = true,
 }: CommunicationStyleProps) {
   if (!style) {
     return null;
+  }
+
+  const content = (
+    <p className="text-purple-200/80 text-sm leading-relaxed">{style}</p>
+  );
+
+  if (!standalone) {
+    return content;
   }
 
   return (
@@ -271,7 +346,7 @@ export function CommunicationStyle({
       <h3 className="mb-2 font-bold text-lg text-white">
         Communication Style ✨
       </h3>
-      <p className="text-purple-200/80 text-sm leading-relaxed">{style}</p>
+      {content}
     </motion.div>
   );
 }
@@ -280,11 +355,38 @@ export function CommunicationStyle({
 type FillerWordsProps = {
   fillerWords: string[];
   delay?: number;
+  standalone?: boolean;
 };
 
-export function FillerWords({ fillerWords, delay = 0.4 }: FillerWordsProps) {
+export function FillerWords({
+  fillerWords,
+  delay = 0.4,
+  standalone = true,
+}: FillerWordsProps) {
   if (!fillerWords || fillerWords.length === 0) {
     return null;
+  }
+
+  const content = (
+    <>
+      <h4 className="mb-2 font-semibold text-purple-300 text-sm">
+        Filler Words
+      </h4>
+      <div className="flex flex-wrap gap-2">
+        {fillerWords.map((word) => (
+          <span
+            className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-xs"
+            key={word}
+          >
+            {word}
+          </span>
+        ))}
+      </div>
+    </>
+  );
+
+  if (!standalone) {
+    return <div>{content}</div>;
   }
 
   return (
@@ -318,11 +420,57 @@ type SyntaxPatternsProps = {
     formatting?: string;
   };
   delay?: number;
+  standalone?: boolean;
 };
 
-export function SyntaxPatterns({ syntax, delay = 0.7 }: SyntaxPatternsProps) {
+export function SyntaxPatterns({
+  syntax,
+  delay = 0.7,
+  standalone = true,
+}: SyntaxPatternsProps) {
   if (!syntax || Object.keys(syntax).length === 0) {
     return null;
+  }
+
+  const content = (
+    <div className="space-y-3">
+      {syntax.sentence_length && (
+        <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
+          <h4 className="mb-1 font-semibold text-purple-300 text-sm">
+            Sentence Length
+          </h4>
+          <p className="text-purple-200/70 text-xs">{syntax.sentence_length}</p>
+        </div>
+      )}
+      {syntax.capitalization && (
+        <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
+          <h4 className="mb-1 font-semibold text-purple-300 text-sm">
+            Capitalization
+          </h4>
+          <p className="text-purple-200/70 text-xs">{syntax.capitalization}</p>
+        </div>
+      )}
+      {syntax.punctuation && (
+        <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
+          <h4 className="mb-1 font-semibold text-purple-300 text-sm">
+            Punctuation
+          </h4>
+          <p className="text-purple-200/70 text-xs">{syntax.punctuation}</p>
+        </div>
+      )}
+      {syntax.formatting && (
+        <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
+          <h4 className="mb-1 font-semibold text-purple-300 text-sm">
+            Formatting
+          </h4>
+          <p className="text-purple-200/70 text-xs">{syntax.formatting}</p>
+        </div>
+      )}
+    </div>
+  );
+
+  if (!standalone) {
+    return content;
   }
 
   return (
@@ -335,44 +483,7 @@ export function SyntaxPatterns({ syntax, delay = 0.7 }: SyntaxPatternsProps) {
       <h3 className="mb-3 font-bold text-lg text-white">
         Syntax & Writing Patterns 📝
       </h3>
-      <div className="space-y-3">
-        {syntax.sentence_length && (
-          <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-            <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-              Sentence Length
-            </h4>
-            <p className="text-purple-200/70 text-xs">
-              {syntax.sentence_length}
-            </p>
-          </div>
-        )}
-        {syntax.capitalization && (
-          <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-            <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-              Capitalization
-            </h4>
-            <p className="text-purple-200/70 text-xs">
-              {syntax.capitalization}
-            </p>
-          </div>
-        )}
-        {syntax.punctuation && (
-          <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-            <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-              Punctuation
-            </h4>
-            <p className="text-purple-200/70 text-xs">{syntax.punctuation}</p>
-          </div>
-        )}
-        {syntax.formatting && (
-          <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-            <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-              Formatting
-            </h4>
-            <p className="text-purple-200/70 text-xs">{syntax.formatting}</p>
-          </div>
-        )}
-      </div>
+      {content}
     </motion.div>
   );
 }
@@ -381,11 +492,36 @@ export function SyntaxPatterns({ syntax, delay = 0.7 }: SyntaxPatternsProps) {
 type TopicPatternsProps = {
   patterns: Record<string, string>;
   delay?: number;
+  standalone?: boolean;
 };
 
-export function TopicPatterns({ patterns, delay = 0.8 }: TopicPatternsProps) {
+export function TopicPatterns({
+  patterns,
+  delay = 0.8,
+  standalone = true,
+}: TopicPatternsProps) {
   if (!patterns || Object.keys(patterns).length === 0) {
     return null;
+  }
+
+  const content = (
+    <div className="space-y-2">
+      {Object.entries(patterns).map(([topic, description]) => (
+        <div
+          className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
+          key={topic}
+        >
+          <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
+            {topic.replace(/_/g, " ")}
+          </h4>
+          <p className="text-purple-200/70 text-xs">{description}</p>
+        </div>
+      ))}
+    </div>
+  );
+
+  if (!standalone) {
+    return content;
   }
 
   return (
@@ -398,19 +534,7 @@ export function TopicPatterns({ patterns, delay = 0.8 }: TopicPatternsProps) {
       <h3 className="mb-3 font-bold text-lg text-white">
         Topic-Specific Communication Patterns 🎭
       </h3>
-      <div className="space-y-2">
-        {Object.entries(patterns).map(([topic, description]) => (
-          <div
-            className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
-            key={topic}
-          >
-            <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
-              {topic.replace(/_/g, " ")}
-            </h4>
-            <p className="text-purple-200/70 text-xs">{description}</p>
-          </div>
-        ))}
-      </div>
+      {content}
     </motion.div>
   );
 }
@@ -468,57 +592,24 @@ export function StyleProfileAccordion({
             <AccordionTrigger className="cursor-pointer py-3 text-white hover:no-underline">
               <span className="font-semibold">💬 Vocabulary & Language</span>
             </AccordionTrigger>
-            <AccordionContent className="space-y-3 pb-3">
+            <AccordionContent className="space-y-4 pb-4">
               {styleProfile.vocabulary?.common_phrases && (
-                <div>
-                  <h4 className="mb-2 font-semibold text-purple-300 text-sm">
-                    Common Phrases
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {styleProfile.vocabulary.common_phrases.map((phrase) => (
-                      <span
-                        className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-xs"
-                        key={phrase}
-                      >
-                        "{phrase}"
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <CommonPhrases
+                  phrases={styleProfile.vocabulary.common_phrases}
+                  standalone={false}
+                />
               )}
               {styleProfile.vocabulary?.jargon && (
-                <div>
-                  <h4 className="mb-2 font-semibold text-purple-300 text-sm">
-                    Jargon & Slang
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {styleProfile.vocabulary.jargon.map((word) => (
-                      <span
-                        className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-xs"
-                        key={word}
-                      >
-                        {word}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <Jargon
+                  jargon={styleProfile.vocabulary.jargon}
+                  standalone={false}
+                />
               )}
               {styleProfile.vocabulary?.filler_words && (
-                <div>
-                  <h4 className="mb-2 font-semibold text-purple-300 text-sm">
-                    Filler Words
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {styleProfile.vocabulary.filler_words.map((word) => (
-                      <span
-                        className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-200 text-xs"
-                        key={word}
-                      >
-                        {word}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <FillerWords
+                  fillerWords={styleProfile.vocabulary.filler_words}
+                  standalone={false}
+                />
               )}
             </AccordionContent>
           </AccordionItem>
@@ -530,20 +621,11 @@ export function StyleProfileAccordion({
             <AccordionTrigger className="cursor-pointer py-3 text-white hover:no-underline">
               <span className="font-semibold">🎯 Topics & Expertise</span>
             </AccordionTrigger>
-            <AccordionContent className="space-y-2 pb-3">
-              {Object.entries(styleProfile.keywords || {}).map(
-                ([key, description]) => (
-                  <div
-                    className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
-                    key={key}
-                  >
-                    <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
-                      {key.replace(/_/g, " ")}
-                    </h4>
-                    <p className="text-purple-200/70 text-xs">{description}</p>
-                  </div>
-                )
-              )}
+            <AccordionContent className="pb-3">
+              <Topics
+                keywords={styleProfile.keywords || {}}
+                standalone={false}
+              />
             </AccordionContent>
           </AccordionItem>
         )}
@@ -555,9 +637,10 @@ export function StyleProfileAccordion({
               <span className="font-semibold">✨ Communication Tone</span>
             </AccordionTrigger>
             <AccordionContent className="pb-3">
-              <p className="text-purple-200/80 text-sm leading-relaxed">
-                {styleProfile.tone}
-              </p>
+              <CommunicationStyle
+                standalone={false}
+                style={styleProfile.tone || ""}
+              />
             </AccordionContent>
           </AccordionItem>
         )}
@@ -568,47 +651,11 @@ export function StyleProfileAccordion({
             <AccordionTrigger className="cursor-pointer py-3 text-white hover:no-underline">
               <span className="font-semibold">📝 Writing Patterns</span>
             </AccordionTrigger>
-            <AccordionContent className="space-y-3 pb-3">
-              {styleProfile.syntax?.sentence_length && (
-                <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-                  <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-                    Sentence Length
-                  </h4>
-                  <p className="text-purple-200/70 text-xs">
-                    {styleProfile.syntax.sentence_length}
-                  </p>
-                </div>
-              )}
-              {styleProfile.syntax?.capitalization && (
-                <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-                  <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-                    Capitalization
-                  </h4>
-                  <p className="text-purple-200/70 text-xs">
-                    {styleProfile.syntax.capitalization}
-                  </p>
-                </div>
-              )}
-              {styleProfile.syntax?.punctuation && (
-                <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-                  <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-                    Punctuation
-                  </h4>
-                  <p className="text-purple-200/70 text-xs">
-                    {styleProfile.syntax.punctuation}
-                  </p>
-                </div>
-              )}
-              {styleProfile.syntax?.formatting && (
-                <div className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3">
-                  <h4 className="mb-1 font-semibold text-purple-300 text-sm">
-                    Formatting
-                  </h4>
-                  <p className="text-purple-200/70 text-xs">
-                    {styleProfile.syntax.formatting}
-                  </p>
-                </div>
-              )}
+            <AccordionContent className="pb-3">
+              <SyntaxPatterns
+                standalone={false}
+                syntax={styleProfile.syntax || {}}
+              />
             </AccordionContent>
           </AccordionItem>
         )}
@@ -621,20 +668,11 @@ export function StyleProfileAccordion({
                 🎭 Topic-Specific Communication
               </span>
             </AccordionTrigger>
-            <AccordionContent className="space-y-2 pb-3">
-              {Object.entries(styleProfile.patterns_per_topic || {}).map(
-                ([topic, description]) => (
-                  <div
-                    className="rounded-lg border border-purple-400/20 bg-purple-500/5 p-3"
-                    key={topic}
-                  >
-                    <h4 className="mb-1 font-semibold text-purple-300 text-sm capitalize">
-                      {topic.replace(/_/g, " ")}
-                    </h4>
-                    <p className="text-purple-200/70 text-xs">{description}</p>
-                  </div>
-                )
-              )}
+            <AccordionContent className="pb-3">
+              <TopicPatterns
+                patterns={styleProfile.patterns_per_topic || {}}
+                standalone={false}
+              />
             </AccordionContent>
           </AccordionItem>
         )}
