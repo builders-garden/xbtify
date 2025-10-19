@@ -9,7 +9,7 @@ export const Website = ({ page }: { page?: string }) => {
 
   return (
     <main className="relative z-10 flex h-screen w-full items-center justify-center overflow-y-auto p-6">
-      <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-8 text-center sm:gap-12">
+      <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-8 text-center sm:gap-6">
         {/* App Icon */}
         <div className="relative">
           <div className="-inset-4 absolute animate-pulse rounded-full bg-purple-500/20 blur-2xl" />
