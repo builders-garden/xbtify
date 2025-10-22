@@ -150,7 +150,7 @@ export const createTwitterIntentUrl = (text: string, miniappUrl: string) => {
  * @returns True if the user is not an admin and is not in production, false otherwise
  */
 export const userIsNotAdminAndIsNotProduction = (fid: number): boolean =>
-  env.NEXT_PUBLIC_URL !== "https://production.example.com" &&
+  env.NEXT_PUBLIC_URL !== "https://xbtify.me" &&
   !ADMIN_FIDS.includes(Number(fid));
 
 /**
