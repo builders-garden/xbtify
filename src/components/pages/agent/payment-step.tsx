@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const BASE_USDC_ADDRESS =
   "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-const TEST_AMOUNT = "10000"; // 0.01 USDC (6 decimals)
+const AMOUNT = "5000000"; // 5 USDC (6 decimals)
 
 type PaymentStepProps = {
   onPaymentSuccess: (txHash: string) => void;
@@ -24,7 +24,7 @@ export function PaymentStep({ onPaymentSuccess, onBack }: PaymentStepProps) {
     try {
       const result = await sdk.actions.sendToken({
         token: BASE_USDC_ADDRESS,
-        amount: TEST_AMOUNT,
+        amount: AMOUNT,
         recipientAddress: "0xa52D5b2B7115e1086533EA1f835826B4e01E5B31",
       });
 
@@ -115,7 +115,7 @@ export function PaymentStep({ onPaymentSuccess, onBack }: PaymentStepProps) {
                   <div className="text-6xl">💰</div>
                   <div className="space-y-1">
                     <p className="font-bold font-jersey text-4xl text-white">
-                      0.01 USDC
+                      5 USDC
                     </p>
                     <p className="text-purple-300 text-sm">Testing amount</p>
                   </div>
@@ -188,7 +188,7 @@ export function PaymentStep({ onPaymentSuccess, onBack }: PaymentStepProps) {
                       initial={{ opacity: 0 }}
                       key="pay"
                     >
-                      Pay 0.01 USDC 💫
+                      Pay 5 USDC 💫
                     </motion.span>
                   )}
                 </AnimatePresence>

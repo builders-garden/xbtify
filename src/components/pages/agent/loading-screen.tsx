@@ -12,12 +12,12 @@ const PROGRESS_MESSAGES: AgentCreationProgress[] = [
   },
   {
     stage: "analyzing" as const,
-    progress: 30,
+    progress: 25,
     message: "Analyzing your Farcaster vibe 🔮",
   },
   {
     stage: "training" as const,
-    progress: 52,
+    progress: 50,
     message: "Learning your chaos style 💥",
   },
   {
@@ -26,40 +26,82 @@ const PROGRESS_MESSAGES: AgentCreationProgress[] = [
     message: "Training AI personality...",
   },
   {
+    stage: "finalizing" as const,
+    progress: 95,
+    message: "Your agent is almost ready...",
+  },
+  {
     stage: "complete" as const,
     progress: 100,
     message: "Your chaos twin is ready! 🚀",
   },
 ];
 
+const ESTIMATED_TIME_MS = 60000; // 1 minute
+
 type LoadingScreenProps = {
   onComplete?: () => void;
 };
 
 export function LoadingScreen({ onComplete }: LoadingScreenProps) {
-  const [progress, setProgress] = useState<AgentCreationProgress>(
-    PROGRESS_MESSAGES[0]
+  const [progress, setProgress] = useState(0);
+  const [currentMessage, setCurrentMessage] = useState(
+    PROGRESS_MESSAGES[0].message
   );
-  const [progressIndex, setProgressIndex] = useState(0);
+  const [showMinimizeHint, setShowMinimizeHint] = useState(true);
+  const [startTime] = useState(Date.now());
 
   useEffect(() => {
-    if (progressIndex >= PROGRESS_MESSAGES.length - 1) {
-      if (onComplete) {
-        setTimeout(onComplete, 1000);
-      }
-      return;
+    // Continuous progress increment
+    const progressInterval = setInterval(() => {
+      setProgress(() => {
+        const elapsed = Date.now() - startTime;
+        const estimatedProgress = Math.min(
+          (elapsed / ESTIMATED_TIME_MS) * 95,
+          95
+        );
+
+        return estimatedProgress;
+      });
+    }, 100);
+
+    // Update messages based on progress
+    const messageInterval = setInterval(() => {
+      setProgress((currentProgress) => {
+        // Find appropriate message
+        const messageIndex = PROGRESS_MESSAGES.findIndex(
+          (msg, idx, arr) =>
+            currentProgress >= msg.progress &&
+            (idx === arr.length - 1 || currentProgress < arr[idx + 1].progress)
+        );
+
+        if (messageIndex !== -1) {
+          setCurrentMessage(PROGRESS_MESSAGES[messageIndex].message);
+        }
+
+        // After 1 minute, show "almost ready" message
+        const elapsed = Date.now() - startTime;
+        if (elapsed > ESTIMATED_TIME_MS) {
+          setCurrentMessage("Your agent is almost ready...");
+          setShowMinimizeHint(false);
+        }
+
+        return currentProgress;
+      });
+    }, 500);
+
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(messageInterval);
+    };
+  }, [startTime]);
+
+  // Handle completion when progress reaches 100
+  useEffect(() => {
+    if (progress >= 100 && onComplete) {
+      setTimeout(onComplete, 1000);
     }
-
-    const timer = setTimeout(
-      () => {
-        setProgressIndex((prev) => prev + 1);
-        setProgress(PROGRESS_MESSAGES[progressIndex + 1]);
-      },
-      2000 + Math.random() * 1000
-    ); // Random delay between 2-3s
-
-    return () => clearTimeout(timer);
-  }, [progressIndex, onComplete]);
+  }, [progress, onComplete]);
 
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden p-6">
@@ -209,12 +251,25 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               className="text-indigo-300"
               exit={{ opacity: 0, y: -10 }}
               initial={{ opacity: 0, y: 10 }}
-              key={progress.message}
+              key={currentMessage}
               transition={{ duration: 0.3 }}
             >
-              {progress.message}
+              {currentMessage}
             </motion.p>
           </AnimatePresence>
+          {showMinimizeHint && (
+            <motion.p
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              className="text-purple-300/80 text-sm"
+              transition={{
+                duration: 2,
+                repeat: Number.POSITIVE_INFINITY,
+              }}
+            >
+              This will take about a minute. You can minimize the mini app
+              (don't close it!) and come back later 💫
+            </motion.p>
+          )}
         </div>
 
         {/* Progress Bar - enhanced */}
@@ -222,10 +277,10 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
           <div className="rounded-full border border-white/10 bg-white/5 p-3">
             <div className="h-3 overflow-hidden rounded-full bg-black/20">
               <motion.div
-                animate={{ width: `${progress.progress}%` }}
+                animate={{ width: `${progress}%` }}
                 className="h-full bg-gradient-to-r from-purple-500 to-indigo-600"
                 initial={{ width: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               />
             </div>
           </div>
@@ -239,7 +294,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               repeat: Number.POSITIVE_INFINITY,
             }}
           >
-            {progress.progress}%
+            {Math.round(progress)}%
           </motion.p>
         </div>
 

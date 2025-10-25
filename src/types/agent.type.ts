@@ -55,7 +55,7 @@ export type MarketplaceAgent = {
 };
 
 export type AgentCreationProgress = {
-  stage: "initializing" | "analyzing" | "training" | "complete";
+  stage: "initializing" | "analyzing" | "training" | "finalizing" | "complete";
   progress: number; // 0-100
   message: string;
 };
