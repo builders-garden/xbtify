@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getAgentByFid, updateAgent } from "@/lib/database/queries/agent.query";
+import {
+  getAgentByCreatorFid,
+  updateAgent,
+} from "@/lib/database/queries/agent.query";
 import { updateUserProfile } from "@/lib/neynar";
 import { authenticateApi } from "@/utils/authenticate-api";
 
@@ -28,13 +31,20 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
 
     // Validate that only profile fields are being updated
-    const allowedFields = ["bio", "avatarUrl", "displayName", "username"];
+    const allowedFields = [
+      "bio",
+      "avatarUrl",
+      "displayName",
+      "username",
+      "url",
+    ];
 
     const updates: {
       bio?: string;
       avatarUrl?: string;
       displayName?: string;
       username?: string;
+      url?: string;
     } = {};
 
     for (const field of allowedFields) {
@@ -57,8 +67,10 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    console.log("Updating profile for FID:", authUser.farcasterFid);
+
     // Fetch the agent
-    const agent = await getAgentByFid(authUser.farcasterFid);
+    const agent = await getAgentByCreatorFid(authUser.farcasterFid);
 
     if (!agent) {
       return NextResponse.json(
@@ -84,6 +96,7 @@ export async function PATCH(request: NextRequest) {
       pfp_url?: string;
       display_name?: string;
       username?: string;
+      url?: string;
     } = {};
 
     if (updates.bio !== undefined) {
@@ -97,6 +110,9 @@ export async function PATCH(request: NextRequest) {
     }
     if (updates.username !== undefined) {
       neynarUpdates.username = updates.username;
+    }
+    if (updates.url !== undefined) {
+      neynarUpdates.url = updates.url;
     }
 
     // Update Neynar profile first

@@ -7,6 +7,7 @@ type UpdateAgentProfileData = {
   avatarUrl?: string;
   displayName?: string;
   username?: string;
+  url?: string;
 };
 
 /**

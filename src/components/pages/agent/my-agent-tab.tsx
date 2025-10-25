@@ -49,7 +49,16 @@ export function MyAgentTab({
       console.error("Agent username is required to share");
       return;
     }
-    await shareAgent(agent.id, agent.username, creatorUsername);
+    if (!agent.creatorFid) {
+      console.error("Agent creatorFid is required to share");
+      return;
+    }
+    await shareAgent(
+      agent.creatorFid.toString(),
+      agent.username,
+      creatorUsername,
+      true // isOwner = true for my agent tab
+    );
   };
 
   // Normalize values to lowercase for case-insensitive comparison

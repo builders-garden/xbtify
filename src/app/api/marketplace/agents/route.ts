@@ -44,6 +44,7 @@ export async function GET() {
         movieCharacter: agent.movieCharacter || undefined,
         styleProfilePrompt: agent.styleProfilePrompt || undefined,
         address: agent.address || undefined,
+        creatorFid: agent.creatorFid,
       };
     });
 

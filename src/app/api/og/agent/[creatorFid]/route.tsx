@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { ImageResponse } from "next/og";
 import { FARCASTER_EMBED_SIZE } from "@/lib/constants";
-import { getAgentById } from "@/lib/database/queries/agent.query";
+import { getAgentByCreatorFid } from "@/lib/database/queries/agent.query";
 import { env } from "@/lib/env";
 import { getFonts } from "@/utils/og-image";
 
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 /**
  * GET handler for generating dynamic OpenGraph images for agents
  * @param request - The incoming HTTP request
- * @param params - Route parameters containing the agent ID
+ * @param params - Route parameters containing the creator FID
  * @returns ImageResponse - A dynamically generated image for OpenGraph
  */
 export async function GET(
@@ -21,20 +21,20 @@ export async function GET(
     params,
   }: {
     params: Promise<{
-      agentId: string;
+      creatorFid: string;
     }>;
   }
 ) {
   try {
-    // Extract the agent ID from the route parameters
-    const { agentId } = await params;
+    // Extract the creator FID from the route parameters
+    const { creatorFid } = await params;
 
-    if (!agentId) {
-      return new Response("Agent ID is required", { status: 400 });
+    if (!creatorFid) {
+      return new Response("Creator FID is required", { status: 400 });
     }
 
     // Get the agent from the database
-    const agent = await getAgentById(agentId);
+    const agent = await getAgentByCreatorFid(Number.parseInt(creatorFid, 10));
 
     if (!agent) {
       return new Response("Agent not found", { status: 404 });
@@ -48,7 +48,7 @@ export async function GET(
     const jersey25FontUrl = `https://fonts.googleapis.com/css2?family=Jersey+25&text=${encodeURIComponent(displayText)}`;
     const jersey25Css = await fetch(jersey25FontUrl).then((res) => res.text());
     const fontUrlMatch = jersey25Css.match(
-      // biome-ignore lint/performance/useTopLevelRegex: <explanation>
+      // biome-ignore lint/performance/useTopLevelRegex: regex used in async context
       /src: url\((.+)\) format\('(opentype|truetype)'\)/
     );
 
@@ -139,7 +139,7 @@ export async function GET(
         >
           {/* Agent Avatar */}
           {agent.avatarUrl && (
-            // biome-ignore lint/performance/noImgElement: <explanation>
+            // biome-ignore lint/performance/noImgElement: OG image generation requires img element
             <img
               alt="avatar"
               height={200}

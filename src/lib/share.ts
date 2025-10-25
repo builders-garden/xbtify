@@ -3,22 +3,25 @@ import { env } from "@/lib/env";
 
 /**
  * Share an agent profile on Farcaster using composeCast
- * @param agentId - The database ID of the agent
+ * @param creatorFid - The FID of the agent creator
  * @param agentUsername - The Farcaster username of the agent
  * @param creatorUsername - The Farcaster username of the creator (optional)
+ * @param isOwner - Whether the person sharing is the agent owner (default: false)
  */
 export async function shareAgent(
-  agentId: string,
+  creatorFid: string,
   agentUsername: string,
-  creatorUsername?: string
+  creatorUsername?: string,
+  isOwner = false
 ) {
   try {
     const appUrl = env.NEXT_PUBLIC_URL;
-    const agentUrl = `${appUrl}/agent/${agentId}`;
+    const agentUrl = `${appUrl}/agent/${creatorFid}`;
 
     // Construct the cast text
+    const agentDescription = isOwner ? ", my AI twin" : "";
     const creatorMention = creatorUsername ? " or tagging me" : "";
-    const castText = `check out @${agentUsername}, my AI twin - try it by tagging it${creatorMention} on farcaster!`;
+    const castText = `check out @${agentUsername}${agentDescription} - try it by tagging it${creatorMention} on farcaster!`;
     // Open the compose cast dialog with pre-filled content
     await miniappSdk.actions.composeCast({
       text: castText,

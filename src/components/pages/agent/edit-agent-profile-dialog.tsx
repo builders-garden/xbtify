@@ -35,6 +35,7 @@ export function EditAgentProfileDialog({
     username: agent.username || "",
     bio: "", // Note: bio field doesn't exist in Agent schema yet
     avatarUrl: agent.avatarUrl || "",
+    url: "", // URL field for agent's website/link
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,6 +47,7 @@ export function EditAgentProfileDialog({
       username?: string;
       bio?: string;
       avatarUrl?: string;
+      url?: string;
     } = {};
 
     if (formData.displayName !== (agent.displayName || "")) {
@@ -59,6 +61,9 @@ export function EditAgentProfileDialog({
     }
     if (formData.avatarUrl !== (agent.avatarUrl || "")) {
       updates.avatarUrl = formData.avatarUrl;
+    }
+    if (formData.url && formData.url !== "") {
+      updates.url = formData.url;
     }
 
     if (Object.keys(updates).length === 0) {
@@ -84,6 +89,7 @@ export function EditAgentProfileDialog({
       username: agent.username || "",
       bio: "",
       avatarUrl: agent.avatarUrl || "",
+      url: "",
     });
     onOpenChange(false);
   };
@@ -172,6 +178,24 @@ export function EditAgentProfileDialog({
                 placeholder="https://example.com/avatar.png"
                 type="url"
                 value={formData.avatarUrl}
+              />
+            </div>
+
+            {/* URL */}
+            <div className="space-y-2">
+              <Label className="text-purple-200/80 text-sm" htmlFor="url">
+                Website URL
+              </Label>
+              <Input
+                className="border-purple-400/30 bg-purple-500/10 text-white placeholder:text-purple-300/40 focus:ring-purple-500/60"
+                disabled={isLoading}
+                id="url"
+                onChange={(e) =>
+                  setFormData({ ...formData, url: e.target.value })
+                }
+                placeholder="https://your-website.com"
+                type="url"
+                value={formData.url}
               />
             </div>
           </div>

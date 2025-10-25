@@ -33,7 +33,11 @@ export function AgentDetailView({
       console.error("Agent username is required to share");
       return;
     }
-    await shareAgent(agent.id, agent.username, creatorUsername);
+    await shareAgent(
+      agent.creatorFid.toString(),
+      agent.username,
+      creatorUsername
+    );
   };
 
   return (

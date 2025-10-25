@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AgentPageContent } from "@/components/pages/agent/agent-page-content";
-import { getAgentById } from "@/lib/database/queries/agent.query";
+import { getAgentByCreatorFid } from "@/lib/database/queries/agent.query";
 import { env } from "@/lib/env";
 import { fetchUserFromNeynar } from "@/lib/neynar";
 
@@ -10,15 +10,15 @@ const appName = env.NEXT_PUBLIC_APPLICATION_NAME;
 
 type Props = {
   params: Promise<{
-    agentId: string;
+    creatorFid: string;
   }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { agentId } = await params;
+  const { creatorFid } = await params;
 
   // Get the agent from the database
-  const agent = await getAgentById(agentId);
+  const agent = await getAgentByCreatorFid(Number.parseInt(creatorFid, 10));
 
   // If there is no agent, return a default metadata
   if (!agent) {
@@ -33,8 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bio =
     neynarUser?.profile?.bio?.text || "An AI agent vibing on Farcaster";
 
-  const imageUrl = new URL(`${appUrl}/api/og/agent/${agentId}`);
-  const agentUrl = `${appUrl}/agent/${agentId}`;
+  const imageUrl = new URL(`${appUrl}/api/og/agent/${creatorFid}`);
+  const agentUrl = `${appUrl}/agent/${creatorFid}`;
 
   const miniapp = {
     version: "next",
@@ -83,10 +83,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function AgentPage({ params }: Props) {
-  const { agentId } = await params;
+  const { creatorFid } = await params;
 
   // Get the agent from the database
-  const agent = await getAgentById(agentId);
+  const agent = await getAgentByCreatorFid(Number.parseInt(creatorFid, 10));
 
   if (!agent) {
     notFound();
@@ -112,6 +112,7 @@ export default async function AgentPage({ params }: Props) {
     movieCharacter: agent.movieCharacter || undefined,
     styleProfilePrompt: agent.styleProfilePrompt || undefined,
     address: agent.address || undefined,
+    creatorFid: agent.creatorFid,
   };
 
   return <AgentPageContent agent={marketplaceAgent} />;

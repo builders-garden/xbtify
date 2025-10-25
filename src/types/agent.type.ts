@@ -50,6 +50,7 @@ export type MarketplaceAgent = {
   movieCharacter?: string;
   styleProfilePrompt?: string;
   address?: string;
+  creatorFid: number;
 };
 
 export type AgentCreationProgress = {
