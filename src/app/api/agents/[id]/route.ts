@@ -36,6 +36,7 @@ export async function GET(
     // Transform database agent to marketplace format
     const marketplaceAgent: MarketplaceAgent = {
       id: agent.id,
+      fid: agent.fid,
       username: agent.username || "unknown",
       displayName: agent.displayName || agent.username || "Agent",
       bio: neynarUser?.profile?.bio?.text || "An AI agent vibing on Farcaster",

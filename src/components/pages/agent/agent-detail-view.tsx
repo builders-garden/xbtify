@@ -28,7 +28,8 @@ export function AgentDetailView({
 }: AgentDetailViewProps) {
   const styleProfile = parseStyleProfile(agent.styleProfilePrompt);
 
-  const handleShare = async () => {
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!agent.username) {
       console.error("Agent username is required to share");
       return;
@@ -38,6 +39,14 @@ export function AgentDetailView({
       agent.username,
       creatorUsername
     );
+  };
+
+  const handleViewProfile = async () => {
+    if (agent.fid) {
+      await sdk.actions.viewProfile({
+        fid: agent.fid,
+      });
+    }
   };
 
   return (
@@ -60,37 +69,43 @@ export function AgentDetailView({
       {/* Agent Header */}
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3 rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
+        className="flex items-start justify-between gap-3 rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-purple-500/5 to-purple-600/5 p-4 backdrop-blur-sm"
         initial={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.3 }}
       >
-        <UserAvatar
-          alt={agent.displayName}
-          avatarUrl={agent.avatarUrl ?? null}
-          size="xl"
-        />
-        <div className="flex flex-1 flex-col">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="font-bold text-white text-xl">
-              {agent.displayName}
-            </h2>
-            <motion.button
-              className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
-              onClick={handleShare}
-              type="button"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Share2 className="h-5 w-5" />
-            </motion.button>
+        <button
+          className="flex cursor-pointer items-center gap-3 text-left transition-opacity hover:opacity-80"
+          onClick={handleViewProfile}
+          type="button"
+        >
+          <UserAvatar
+            alt={agent.displayName}
+            avatarUrl={agent.avatarUrl ?? null}
+            size="xl"
+          />
+          <div className="flex flex-1 flex-col">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-bold text-white text-xl">
+                {agent.displayName}
+              </h2>
+            </div>
+            <p className="text-purple-200/60 text-sm">@{agent.username}</p>
+            {agent.address && (
+              <p className="mt-1 font-mono text-purple-200/40 text-xs">
+                {agent.address.slice(0, 6)}...{agent.address.slice(-4)}
+              </p>
+            )}
           </div>
-          <p className="text-purple-200/60 text-sm">@{agent.username}</p>
-          {agent.address && (
-            <p className="mt-1 font-mono text-purple-200/40 text-xs">
-              {agent.address.slice(0, 6)}...{agent.address.slice(-4)}
-            </p>
-          )}
-        </div>
+        </button>
+        <motion.button
+          className="cursor-pointer rounded-full p-1.5 text-purple-300 transition-colors hover:bg-purple-500/20 hover:text-white"
+          onClick={handleShare}
+          type="button"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Share2 className="h-5 w-5" />
+        </motion.button>
       </motion.div>
 
       {/* About */}

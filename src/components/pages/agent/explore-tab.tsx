@@ -1,5 +1,6 @@
 "use client";
 
+import { sdk } from "@farcaster/miniapp-sdk";
 import { Search, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
@@ -199,10 +200,22 @@ function MarketplaceAgentCard({
   agent,
   onStartVibing,
 }: MarketplaceAgentCardProps) {
+  const handleViewProfile = async () => {
+    if (agent.fid) {
+      await sdk.actions.viewProfile({
+        fid: agent.fid,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-purple-600/5 p-4 backdrop-blur-sm transition-all hover:border-purple-400/40">
       {/* Agent Header */}
-      <div className="flex items-center gap-3">
+      <button
+        className="flex cursor-pointer items-center gap-3 text-left transition-opacity hover:opacity-80"
+        onClick={handleViewProfile}
+        type="button"
+      >
         <UserAvatar
           alt={agent.displayName}
           avatarUrl={agent.avatarUrl ?? null}
@@ -212,7 +225,7 @@ function MarketplaceAgentCard({
           <p className="font-medium text-white">{agent.displayName}</p>
           <p className="text-purple-200/60 text-xs">@{agent.username}</p>
         </div>
-      </div>
+      </button>
 
       {/* Agent Bio */}
       <p className="line-clamp-2 text-purple-200/80 text-sm">{agent.bio}</p>

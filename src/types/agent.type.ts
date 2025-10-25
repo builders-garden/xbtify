@@ -37,6 +37,7 @@ export type Activity = {
 
 export type MarketplaceAgent = {
   id: string;
+  fid: number;
   username: string;
   displayName: string;
   bio: string;

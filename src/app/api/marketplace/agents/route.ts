@@ -28,6 +28,7 @@ export async function GET() {
 
       return {
         id: agent.id,
+        fid: agent.fid,
         username: agent.username || "unknown",
         displayName: agent.displayName || agent.username || "Agent",
         bio:

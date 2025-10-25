@@ -113,6 +113,7 @@ export default async function AgentPage({ params }: Props) {
     styleProfilePrompt: agent.styleProfilePrompt || undefined,
     address: agent.address || undefined,
     creatorFid: agent.creatorFid,
+    fid: agent.fid,
   };
 
   return <AgentPageContent agent={marketplaceAgent} />;
