@@ -1,5 +1,6 @@
 "use client";
 
+import { sdk } from "@farcaster/miniapp-sdk";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -174,10 +175,38 @@ function ActivityCard({
     rejectActivity.mutate({ activityId: activity.id, agentFid });
   };
 
+  const handleViewProfile = async () => {
+    if (activity.parentCastAuthorFid) {
+      await sdk.actions.viewProfile({
+        fid: activity.parentCastAuthorFid,
+      });
+    }
+  };
+
+  const handleViewParentCast = async () => {
+    if (activity.parentCastHash) {
+      await sdk.actions.viewCast({
+        hash: activity.parentCastHash,
+      });
+    }
+  };
+
+  const handleViewAgentCast = async () => {
+    if (activity.castHash) {
+      await sdk.actions.viewCast({
+        hash: activity.castHash,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
       {/* Author Info */}
-      <div className="flex items-center gap-3">
+      <button
+        className="flex cursor-pointer items-center gap-3 text-left transition-opacity hover:opacity-80"
+        onClick={handleViewProfile}
+        type="button"
+      >
         <UserAvatar
           alt={
             activity.parentUserMetadata?.username ||
@@ -201,20 +230,28 @@ function ActivityCard({
         <span className="text-white/60 text-xs">
           {formatTimestamp(activity.createdAt || new Date())}
         </span>
-      </div>
+      </button>
 
       {/* Original Message */}
-      <div className="rounded-xl bg-white/5 p-3">
+      <button
+        className="cursor-pointer rounded-xl bg-white/5 p-3 text-left transition-colors hover:bg-white/10"
+        onClick={handleViewParentCast}
+        type="button"
+      >
         <p className="text-sm text-white/80">
           {activity.parentCastText || "No parent message"}
         </p>
-      </div>
+      </button>
 
       {/* Agent Response */}
-      <div className="rounded-xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 p-3">
+      <button
+        className="cursor-pointer rounded-xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 p-3 text-left transition-colors hover:from-purple-500/30 hover:to-indigo-500/30"
+        onClick={handleViewAgentCast}
+        type="button"
+      >
         <p className="font-medium text-purple-300 text-xs">Your Agent</p>
         <p className="mt-1 text-sm text-white">{activity.castText}</p>
-      </div>
+      </button>
 
       {/* Action Buttons (for Review) */}
       {showActions && (
